@@ -1,0 +1,28 @@
+- post
+ + tag : [String]
+ + userID : ref "user"
+ + content : String
+ + time : String
+ + viewer : [UserID : String]
+ + clap : [userID : String]
+ + comment : {userID : ref "user" ,time: String, reply : [{userId : ref "user", content : String}] }
+
+- news
+ + category : String
+ + tag : [String]
+ + content : String
+ + time : String
+ + clap : [userID : ref "user"]
+ + comment : {userID : ref "user" ,time: String, reply : [{userId : ref "user", content : String}] }
+
+- user
+ + isAdmin : boolean
+ + firstName : String
+ + lastName : String
+ + gender : String
+ + email : String
+ + phoneNumber : String
+ + dob : String
+ + occupation : {isWorking: boolean, describe : isWorking ? {jobTitle : String, companyName : String} : {schoolName : String, major: String}
+ + address : String
+ + avatar : String

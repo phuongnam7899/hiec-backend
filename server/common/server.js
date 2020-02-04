@@ -24,7 +24,7 @@ export default class ExpressServer {
         reconnectInterval: 500,
         autoReconnect: true,
         useNewUrlParser: true,
-        dbName: 'x-tutor'
+        dbName: 'hiec-web'
       }
     )
       .then(
