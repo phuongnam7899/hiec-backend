@@ -23,5 +23,8 @@ export class Controller {
         .location(`/api/examples/${r.id}`)
         .json(r));
   }
+  shit(req,res){
+    
+  }
 }
 export default new Controller();
