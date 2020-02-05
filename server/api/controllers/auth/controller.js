@@ -31,9 +31,13 @@ export class Controller {
     signOut(req,res){
         const token = req.body.token || req.query.token || req.headers['x-access-token'];
         console.log(token)
-        tokenModel.findOneAndUpdate({token : token},{isActive : false}).then((updatedToken) => {
-            console.log(updatedToken)
-            res.send("Logged out")
+        tokenModel.findOneAndUpdate({token : token, isActive : true},{isActive : false}).then((updatedToken) => {
+            if(updatedToken){
+                console.log(updatedToken)
+                res.send("Logged out")
+            }else{
+                res.send("Token invalid")
+            }
         })
     }
 }

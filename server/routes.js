@@ -3,6 +3,7 @@ const morgan = require('../node_modules/morgan');
 const jwt = require('../node_modules/jsonwebtoken');
 import authRouter from "./api/controllers/auth/router";
 import tokenModel from "./api/models/token"
+import userRouter from "./api/controllers/user/router"
 
 export default function routes(app) {
   app.use(bodyParser.urlencoded({ extended: true }));
@@ -32,4 +33,5 @@ export default function routes(app) {
       });
     }
   });
+  app.use("/api/user",userRouter);
 }
