@@ -1,7 +1,7 @@
 {
   "name": "backend",
   "version": "1.0.0",
-  "description": "My cool app",
+  "description": "HIEC Web Backend",
   "main": "index.js",
   "scripts": {
     "product": "node dist/index.js",

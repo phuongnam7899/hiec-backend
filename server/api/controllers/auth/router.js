@@ -3,4 +3,5 @@ import * as express from 'express';
 
 export default express
                 .Router()
-                .get("/", Controller.getOne)
+                .post("/sign-in", Controller.signIn)
+                .get("/sign-out", Controller.signOut)

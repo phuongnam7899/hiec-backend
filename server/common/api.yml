@@ -9,203 +9,16 @@ basePath: /api
 
 tag: 
 - name: "auth"
-  description: "Everything about sign up and sign in"
+  description: "Permission to send request to API"
 
 consumes:
   - application/json
 produces:
   - application/json
 
-definitions:
-  updateRef:
-    type: object
-    properties:
-      major:
-        type: string
-  loginInfo:
-    type: object
-    required:
-      - email
-      - password
-    properties:
-      email:
-        type: string
-      password:
-        type: string
-  newAccount:
-    type: object
-    required:
-    - role
-    - first_name
-    - last_name
-    - email
-    - phone_num
-    - password
-    - gender_name
-    properties:
-      role:
-        type: string
-      first_name:
-        type: string
-      last_name:
-          type: string
-      email:
-        type: string
-      phone_num:
-        type: string
-      password:
-        type: string
-      gender_name:
-        type: string
-      profile_picture:
-        type: string
-  updateInfo:
-    type: object
-    required:
-    - major
-    properties:
-      about_me: 
-        type: string
-      major:
-        type: array
-        items:
-          type: string
-      certificate:
-        type: array
-        items:
-          type: string
-      id:
-        type: string
-      institute:
-        type: array
-        items:
-          type: string
-  experience:
-    type: object
-    required:
-    - id
-    - experiences
-    properties:
-      id:
-        type: string
-      experiences:
-        type: array
-        items:
-          type: object
-  teaching_sub:
-    type: object
-    required:
-    - id
-    - teaching_subs
-    properties:
-      id:
-        type: string
-      teaching_subs:
-        type: array
-        items:
-          type: object
-  feedback:
-    type: object
-    required:
-    - id
-    - feedbacks
-    properties:
-      id:
-        type: string
-      feedbacks:
-        type: array
-        items:
-          type: object
-  tutor_id:
-    type: object
-    required:
-    - id
-    properties:
-      id:
-        type: string 
-  tutor_filter:
-    type: object
-    properties:
-      academic_level:
-        type: string
-      subject:
-        type: string 
-      academic_grade:
-        type: string
-  newClass:
-    type: object
-    required:
-    - tutor_id
-    - student_id
-    - subject
-    - sessions
-    - hourly_rate
-    properties:
-      sessions:
-        type: array
-        items:
-          type: object
-      tutor_id:
-        type: string
-      student_id:
-        type: string
-      subject:
-        type: string 
-      hourly_rate:
-        type: number
-  userInfo:
-    type: object
-    properties:
-      academic_level_name:
-        type: string
-      # account_number:
-      #   type: string
-      address:
-        type: string
-      # bank_name:
-      #   type: string 
-      date_of_birth:
-        type: string
-      first_name:
-        type: string
-      gender_name:
-        type: string
-      last_name:
-        type: string
-      # country_name:
-      #   type: string
-      # language_name:
-      #   type: string
-      # city_name:
-      #   type: string
-      nationality_name:
-        type: string
-      # no_passport:
-      #   type: string
-      postal_code:
-        type: string
-      # profile_picture:
-      #   type: string
-      payment_method:
-        type: string
-      paypal_email:
-        type: string
-      # phone_code:
-      #   type: string
-      phone_number:
-        type: integer
-  free_time:
-    type: object
-    required:
-    - free_time
-    properties:
-      free_time:
-        type: array
-        items:
-          type: object
 
 paths:
-  /auth/:
+  /auth/sign-out:
     get:
       tags:
         - auth
@@ -216,4 +29,18 @@ paths:
           description: token to be disabled
           schema:
             type: string
+  /auth/sign-in:
+    post:
+      tags:
+        - auth
+      description: log in
+      paramenters:
+        - name: email
+          in: body
+          description: user email
+          type: string
+        - name: password
+          in: body
+          description: user password
+          type: string
   
