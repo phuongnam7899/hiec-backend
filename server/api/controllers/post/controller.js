@@ -1,5 +1,6 @@
 import postModel from "../../models/post"
 import userModel from "../../models/user"
+import post from "../../models/post";
 
 export class Controller {
     async createNewPost(req,res){
@@ -7,7 +8,7 @@ export class Controller {
         const emptyPost = {
             viewers : [],
             claps : [],
-            comment : []
+            comments : []
         }
         if(tags && user && postTime && title && content){
             const userFound = await userModel.findById(user);
@@ -164,6 +165,40 @@ export class Controller {
         }catch(err){
             res.send(err)
         }
+    }
+
+    async getRecent(req,res){
+        const number = req.body.number;
+        const sortedByTime = await postModel.find().sort([["postTime" , -1]]).limit(number)
+        res.send(sortedByTime)
+    }
+    async getHotPost(req,res){
+        const number = req.body.number;
+        try{
+            const sortedByTime = await postModel.find().sort([["postTime" , -1]]).limit(30)
+            const sortedByTimeCopy = [...sortedByTime];
+            console.log(sortedByTimeCopy)
+            for(let i = 0; i < sortedByTimeCopy.length - 1; i++){
+                console.log(i)
+                for(let j = i; j < sortedByTimeCopy.length;j++){
+                    console.log(j)
+                    console.log(`Before : ${sortedByTimeCopy[j].claps.length} - ${sortedByTimeCopy[i].claps.length}`)
+                    if(sortedByTimeCopy[j].claps.length > sortedByTimeCopy[i].claps.length){
+                        console.log("swap")
+                        sortedByTimeCopy[j] = [sortedByTimeCopy[i],sortedByTimeCopy[i] = sortedByTimeCopy[j]][0]
+                        console.log(`After : ${sortedByTimeCopy[j].claps.length} - ${sortedByTimeCopy[i].claps.length}`)
+                    }
+                }
+            }
+            if(number <= sortedByTimeCopy.length ){
+                res.send(sortedByTimeCopy.slice(0,number - 1))
+            }else{
+                res.send(sortedByTimeCopy)
+            }
+        }catch(err){
+            res.send(err)
+        }
+
     }
 }
 export default new Controller();

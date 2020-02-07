@@ -4,13 +4,15 @@ const jwt = require('../node_modules/jsonwebtoken');
 import authRouter from "./api/controllers/auth/router";
 import tokenModel from "./api/models/token";
 import userRouter from "./api/controllers/user/router";
-import postRouter from "./api/controllers/post/router"
+import postRouter from "./api/controllers/post/router";
+import newsRouter from "./api/controllers/news/router";
 
 export default function routes(app) {
   app.use(bodyParser.urlencoded({ extended: true }));
   app.use(morgan('dev'));
   app.use("/api/auth", authRouter);
   app.use("/api/post",postRouter);
+  app.use("/api/news",newsRouter);
   app.use(function (req, res, next) {
     const token = req.body.token || req.query.token || req.get('X-Auth-Token');
     if (token) {

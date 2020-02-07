@@ -1,8 +1,9 @@
 const mongoose = require("mongoose");
+mongoose.set('useCreateIndex', true);
 const Schema = mongoose.Schema;
 const Model = mongoose.model;
 
-const PostSchema = new Schema({
+const NewsSchema = new Schema({
     category : {type : String},
     tags : [String],
     postTime : {type : String, require : true},
@@ -21,4 +22,4 @@ const PostSchema = new Schema({
         }]
     }]
 })
-export default Model("post",PostSchema);
+export default Model("new",NewsSchema);
