@@ -33,7 +33,7 @@ export class Controller {
                                 name : post.user.profile.name,
                             }
                         } else {
-                            object.score++;
+                            object.score+= post.claps.length;
                         }
                         if (count == findPost.length) {
                             arrayPosts.push(object)
