@@ -4,9 +4,7 @@ import userModel from "../../models/user"
 
 export class Controller {
     async createNewPost(req,res){
-        // const now = Date.now();
-        const {tags,user,title,content} = req.body;
-        const postTime = Date.now();
+        const {tags,user,postTime,title,content} = req.body;
         const emptyPost = {
             viewers : [],
             claps : [],
