@@ -7,7 +7,6 @@ import userRouter from "./api/controllers/user/router";
 import postRouter from "./api/controllers/post/router";
 import newsRouter from "./api/controllers/news/router";
 import commonRouter from "./api/controllers/common/router" 
-
 export default function routes(app) {
   app.use(bodyParser.urlencoded({ extended: true }));
   app.use(morgan('dev'));
