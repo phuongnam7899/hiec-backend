@@ -28,7 +28,7 @@ export class Controller {
                             arrayPosts.push(object)
                             object = {
                                 userId: post.user._id,
-                                score: 1,
+                                score: 0,
                                 avatar : post.user.profile.avatar,
                                 name : post.user.profile.name,
                             }
