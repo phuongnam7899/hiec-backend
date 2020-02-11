@@ -1,5 +1,5 @@
 import userModel from "../../models/user"
-
+import postModel from "../../models/post"
 
 export class Controller {
     changePassword(req,res){
@@ -54,7 +54,7 @@ export class Controller {
         userModel.findByIdAndDelete(id)
         .then((userDeleted)=>{
             if(userDeleted){
-                res.status(200).send("User deleted")
+                res.status(200).send("user deleted")
             }
             else{
                 res.status(404).send("User not found")

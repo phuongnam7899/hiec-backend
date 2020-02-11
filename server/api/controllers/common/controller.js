@@ -24,7 +24,7 @@ export class Controller {
                     findPost.forEach((post) => {
                         // console.log(object.userId)
                         count++ 
-                        if (post.user._id !== object.userId) {
+                        if ( post.user && (post.user._id !== object.userId)) {
                             arrayPosts.push(object)
                             object = {
                                 userId: post.user._id,
