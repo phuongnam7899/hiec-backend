@@ -138,10 +138,10 @@ export class Controller {
         }
     }
     async searchByTag(req,res){
-        const {tagList} = req.body;
+        const {tagList,category} = req.body;
         console.log(tagList)
         try{
-            const newss = await newsModel.find({ "tags" : { $all : tagList } })
+            const newss = await newsModel.find({ "tags" : { $all : tagList } , category : category })
             console.log(newss)
             res.send(newss)
         }catch(err){
@@ -150,9 +150,10 @@ export class Controller {
     }
     async searchByKeyword(req,res){
         const keyword = req.query.keyword;
+        const category = req.query.category;
         console.log(keyword)
         try{
-            const newss = await newsModel.find();
+            const newss = await newsModel.find({category : category});
             const foundList = newss.filter((news) => {
                 return news.title.toUpperCase().includes(keyword.toUpperCase())
             })
@@ -168,25 +169,26 @@ export class Controller {
         res.send(sortedByTime)
     }
     async getHotNews(req,res){
-        const number = req.body.number;
+        const {number,category} = req.body;
+        console.log(req.body)
         try{
-            const sortedByTime = await newsModel.find().sort([["postTime" , -1]]).limit(30)
+            const sortedByTime = await newsModel.find({category : category}).sort([["postTime" , -1]]).limit(30)
             const sortedByTimeCopy = [...sortedByTime];
             console.log(sortedByTimeCopy)
             for(let i = 0; i < sortedByTimeCopy.length - 1; i++){
-                console.log(i)
+                // console.log(i)
                 for(let j = i; j < sortedByTimeCopy.length;j++){
-                    console.log(j)
-                    console.log(`Before : ${sortedByTimeCopy[j].clap.length} - ${sortedByTimeCopy[i].clap.length}`)
+                    // console.log(j)
+                    // console.log(`Before : ${sortedByTimeCopy[j].clap.length} - ${sortedByTimeCopy[i].clap.length}`)
                     if(sortedByTimeCopy[j].clap.length > sortedByTimeCopy[i].clap.length){
-                        console.log("swap")
+                        // console.log("swap")
                         sortedByTimeCopy[j] = [sortedByTimeCopy[i],sortedByTimeCopy[i] = sortedByTimeCopy[j]][0]
-                        console.log(`After : ${sortedByTimeCopy[j].clap.length} - ${sortedByTimeCopy[i].clap.length}`)
+                        // console.log(`After : ${sortedByTimeCopy[j].clap.length} - ${sortedByTimeCopy[i].clap.length}`)
                     }
                 }
             }
             if(number <= sortedByTimeCopy.length ){
-                res.send(sortedByTimeCopy.slice(0,number - 1))
+                res.send(sortedByTimeCopy.slice(0,number))
             }else{
                 res.send(sortedByTimeCopy)
             }

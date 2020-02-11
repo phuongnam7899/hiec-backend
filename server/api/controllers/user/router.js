@@ -8,3 +8,4 @@ export default express
                 .delete("/:id",Controller.deleteUserByID)
                 .put("/:id",Controller.updateInfo)
                 .put("/:id/password",Controller.changePassword)
+                

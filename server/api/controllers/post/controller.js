@@ -1,6 +1,6 @@
 import postModel from "../../models/post"
 import userModel from "../../models/user"
-import post from "../../models/post";
+// import post from "../../models/post";
 
 export class Controller {
     async createNewPost(req,res){

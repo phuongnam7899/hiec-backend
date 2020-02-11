@@ -6,7 +6,7 @@ const Model = mongoose.model;
 const PostSchema = new Schema({
     tags : [String],
     user : {type : mongoose.Types.ObjectId, ref : "user",require : true},
-    postTime : {type : String, require : true},
+    postTime : {type : Number, require : true},
     title : {type : String},
     content : {type : String, require : true},
     viewers : [String],

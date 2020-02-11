@@ -1,5 +1,5 @@
 import userModel from "../../models/user"
-
+import postModel from "../../models/post"
 
 export class Controller {
     changePassword(req,res){
@@ -51,15 +51,22 @@ export class Controller {
 
     deleteUserByID(req,res){
         const {id} = req.params
-        userModel.findByIdAndDelete(id)
-        .then((userDeleted)=>{
-            if(userDeleted){
-                res.status(200).send("User deleted")
-            }
-            else{
-                res.status(404).send("User not found")
+        postModel.deleteMany({user : id}).then(deletedPost=>{
+            if(deletedPost){
+                userModel.findByIdAndDelete(id)
+                .then((userDeleted)=>{
+                    if(userDeleted){
+                        res.status(200).send("user deleted")
+                    }
+                    else{
+                        res.status(404).send("User not found")
+                    }
+                })
+            }else{
+                res.status(404).send("Cant delete post so cant delete user")
             }
         })
+
     }
 
     getUserByID(req,res){
