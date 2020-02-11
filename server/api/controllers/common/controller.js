@@ -28,11 +28,11 @@ export class Controller {
                             arrayPosts.push(object)
                             object = {
                                 userId: post.user._id,
-                                score: 0,
+                                score: post.claps.length,
                                 avatar : post.user.profile.avatar,
                                 name : post.user.profile.name,
                             }
-                        } else {
+                        } else if( post.user && (post.user._id == object.userId)){
                             object.score+= post.claps.length;
                         }
                         if (count == findPost.length) {
@@ -42,7 +42,6 @@ export class Controller {
                     // arrayPosts.sort(function Value(a, b) {
                     //     return b.numberOfPosts - a.numberOfPosts;
                     // })
-                    
                     return arrayPosts.splice(1).reverse().slice(0,10);
 
             }catch(err){
@@ -50,16 +49,11 @@ export class Controller {
                 return err
             }
         }
-        
-
         let respondData = {
             week: await findUserMostPosts(week),
             month: await findUserMostPosts(month),
             year: await findUserMostPosts(year),
         }
-        // console.log(51)
-    
-        // console.log(respondData)
         res.status(200).send(respondData)
     }
 
