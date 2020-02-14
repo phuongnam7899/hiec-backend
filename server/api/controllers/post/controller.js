@@ -37,8 +37,17 @@ export class Controller {
         const user = await userModel.findById(userID);
         if(!user) res.send("user not found")
         else {
-            const posts = await postModel.find({user : userID}).sort([["postTime", -1]]).limit(perPage).skip(perPage * pageNumber)
-            res.send(posts)
+            const posts = await postModel.find({user : userID}).sort([["postTime", -1]]).limit(perPage).skip(perPage * pageNumber).populate("user")
+            let arrayPost = []
+            posts.forEach(post=>{
+                let newPost = JSON.parse(JSON.stringify(post))
+                delete newPost.user.account;
+                arrayPost.push( newPost );
+                // console.log(post);
+            })
+            res.send(arrayPost);
+            
+            // res.send(posts)
         } 
     }
     async deletePostByID(req,res){
