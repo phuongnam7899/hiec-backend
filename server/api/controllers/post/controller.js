@@ -31,8 +31,8 @@ export class Controller {
     }
     async getPostsByUser(req,res){
         const perPage = 10
-        const userID = req.body.id;
         const pageNumber = Math.max(0, req.body.page)
+        const userID = req.body.id;
         console.log(pageNumber);
         const user = await userModel.findById(userID);
         if(!user) res.send("user not found")
