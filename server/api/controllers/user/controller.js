@@ -41,7 +41,7 @@ export class Controller {
         .then(success=>{
             console.log(success)
             if(success){
-                res.status(200).send("user updated")
+                res.status(200).send(success)
             }else{
                 res.status(405).send("user not found")
             }
@@ -74,7 +74,10 @@ export class Controller {
         userModel.findById(id)
         .then((userFound)=>{
             if(userFound){
-                res.status(200).send(userFound)
+                const userInfo = JSON.parse(JSON.stringify(userFound));
+                delete userInfo.account.password;
+                // console.log(userInfo)
+                res.status(200).send(userInfo)
             }else{
                 res.status(404).send("user not found / ID wrong")
             }
