@@ -25,6 +25,8 @@ export class Controller {
                                 const responseData = {token,userInfo};
                                 res.status(200).send(responseData)
                             }
+                        }).catch((err) => {
+                                console.log(err)
                         })
         }
     }

@@ -14,9 +14,9 @@ export class Controller {
             const userFound = await userModel.findById(user);
             if(userFound){
             postModel.create({...emptyPost,tags,user,postTime,title,content}).then((createdPost) => {
-                res.send(createdPost);
+                res.send({message : "success",data :createdPost});
             }).catch(err => res.send(err))
-        }else res.send("user not found")
+        }else res.send({message : "user not found"})
         }
     }
 
@@ -30,11 +30,14 @@ export class Controller {
         }
     }
     async getPostsByUser(req,res){
-        const userID = req.params.id;
+        const perPage = 10
+        const userID = req.body.id;
+        const pageNumber = Math.max(0, req.body.page)
+        console.log(pageNumber);
         const user = await userModel.findById(userID);
         if(!user) res.send("user not found")
         else {
-            const posts = await postModel.find({user : userID})
+            const posts = await postModel.find({user : userID}).sort([["postTime", -1]]).limit(perPage).skip(perPage * pageNumber)
             res.send(posts)
         } 
     }
