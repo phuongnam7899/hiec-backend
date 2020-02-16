@@ -271,6 +271,7 @@ export class Controller {
                 console.log(err)
             }
         }else if (sortBy === "time"){
+        
             try{
                 filteredByTagAndTime = await postModel.find({ "tags" : { $all : tags } }).sort([["postTime" , -1]]).populate("user");
                 const finalFiltered = filteredByTagAndTime.filter((post) => {
