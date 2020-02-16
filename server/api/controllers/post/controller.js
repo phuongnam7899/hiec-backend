@@ -219,8 +219,11 @@ export class Controller {
             
             })
             if(number <= sortedByTimeCopy.length ){
+                console.log(arrayPost.slice(0,number -1 ))
                 res.send(arrayPost.slice(0,number - 1))
             }else{
+                console.log(number);
+                console.log(sortedByTimeCopy.length)
                 res.send(arrayPost)
             }
         }catch(err){
@@ -273,7 +276,8 @@ export class Controller {
         }else if (sortBy === "time"){
         
             try{
-                filteredByTagAndTime = await postModel.find({ "tags" : { $all : tags } }).sort([["postTime" , -1]]).populate("user");
+                filteredByTagAndTime = tags.length > 0 ? await postModel.find({ "tags" : { $all : tags } }).sort([["postTime" , -1]]).populate("user")
+                                    : await postModel.find().sort([["postTime" , -1]]).populate("user");
                 const finalFiltered = filteredByTagAndTime.filter((post) => {
                         return post.title.toUpperCase().includes(keyword.toUpperCase())
                     })
