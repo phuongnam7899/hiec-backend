@@ -1,6 +1,7 @@
 import postModel from "../../models/post"
 import userModel from "../../models/user"
 // import post from "../../models/post";
+import axios from "axios"
 
 export class Controller {
     async createNewPost(req,res){
@@ -158,7 +159,7 @@ export class Controller {
         const {tagList} = req.body;
         console.log(tagList)
         try{
-            const posts = await postModel.find({ "tags" : { $all : tagList } })
+            const posts = await postModel.find({ "tags" : { $all : tagList } }).sort([["postTime" , -1]])
             console.log(posts)
             res.send(posts)
         }catch(err){
@@ -185,9 +186,9 @@ export class Controller {
         res.send(sortedByTime)
     }
     async getHotPost(req,res){
-        const number = req.body.number;
+        const {number,limit} = req.body.number;
         try{
-            const sortedByTime = await postModel.find().sort([["postTime" , -1]]).limit(30)
+            const sortedByTime = await postModel.find().sort([["postTime" , -1]]).limit(limit)
             const sortedByTimeCopy = [...sortedByTime];
             console.log(sortedByTimeCopy)
             for(let i = 0; i < sortedByTimeCopy.length - 1; i++){
@@ -212,5 +213,49 @@ export class Controller {
         }
 
     }
-}
+    async search(req,res){
+        const {tags,keyword,sortBy,page} = req.body;
+        const perPage = 5;
+        let filteredByTagAndTime;
+        let filteredByTagAndClap;
+        if(sortBy === "clap"){
+            try{
+                const filteredByTag = await postModel.find({ "tags" : { $all : tags } })
+                // console.log(filteredByTag)
+                const filteredByTagCopy = [...filteredByTag];
+                // console.log(filteredByTagCopy)
+                for(let i = 0; i < filteredByTagCopy.length - 1; i++){
+                    // console.log(i)
+                    for(let j = i; j < filteredByTagCopy.length;j++){
+                        console.log(j)
+                        // console.log(`Before : ${filteredByTagCopy[j].claps.length} - ${filteredByTagCopy[i].claps.length}`)
+                        if(filteredByTagCopy[j].claps.length > filteredByTagCopy[i].claps.length){
+                            // console.log("swap")
+                            filteredByTagCopy[j] = [filteredByTagCopy[i],filteredByTagCopy[i] = filteredByTagCopy[j]][0]
+                            // console.log(`After : ${filteredByTagCopy[j].claps.length} - ${filteredByTagCopy[i].claps.length}`)
+                        }
+                    }
+                }
+                filteredByTagAndClap = filteredByTagCopy;
+                const finalFiltered = filteredByTagAndClap.filter((post) => {
+                    return post.title.toUpperCase().includes(keyword.toUpperCase())
+                })
+                res.send(finalFiltered.slice(perPage * page, perPage * (page + 1)))
+                
+            }catch(err){
+                console.log(err)
+            }
+        }else if (sortBy === "time"){
+            try{
+                filteredByTagAndTime = await postModel.find({ "tags" : { $all : tags } }).sort([["postTime" , -1]]);
+                const finalFiltered = filteredByTagAndTime.filter((post) => {
+                        return post.title.toUpperCase().includes(keyword.toUpperCase())
+                    })
+                    res.send(finalFiltered)
+                
+            }catch(err){
+                console.log(err)
+            }
+        }
+}}
 export default new Controller();

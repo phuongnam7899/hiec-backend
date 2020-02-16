@@ -169,10 +169,10 @@ export class Controller {
         res.send(sortedByTime)
     }
     async getHotNews(req,res){
-        const {number,category} = req.body;
+        const {number,category,limit} = req.body;
         console.log(req.body)
         try{
-            const sortedByTime = await newsModel.find({category : category}).sort([["postTime" , -1]]).limit(30)
+            const sortedByTime = await newsModel.find({category : category}).sort([["postTime" , -1]]).limit(limit)
             const sortedByTimeCopy = [...sortedByTime];
             console.log(sortedByTimeCopy)
             for(let i = 0; i < sortedByTimeCopy.length - 1; i++){
