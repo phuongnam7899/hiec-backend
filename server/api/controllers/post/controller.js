@@ -233,19 +233,25 @@ export class Controller {
     }
     async search(req,res){
         const {tags,keyword,sortBy,page} = req.body;
+        console.log(page)
+        console.log(tags)
+        console.log(tags === ["energy"])
+        console.log(keyword === "")
+        console.log(sortBy === "claps")
+        console.log(page === 0)
         const perPage = 5;
         let filteredByTagAndTime;
         let filteredByTagAndClap;
-        if(sortBy === "clap"){
+        if(sortBy === "claps"){
             try{
-                const filteredByTag = await postModel.find({ "tags" : { $all : tags } })
-                // console.log(filteredByTag)
+                const filteredByTag = tags.length > 0 ? await postModel.find({ "tags" : { $all : tags } }).populate("user") : await postModel.find().populate("user")
+                console.log(filteredByTag)
                 const filteredByTagCopy = [...filteredByTag];
                 // console.log(filteredByTagCopy)
-                for(let i = 0; i < filteredByTagCopy.length - 1; i++){
+                for(let i = 0; i < filteredByTagCopy.length; i++){
                     // console.log(i)
                     for(let j = i; j < filteredByTagCopy.length;j++){
-                        console.log(j)
+                        // console.log(j)
                         // console.log(`Before : ${filteredByTagCopy[j].claps.length} - ${filteredByTagCopy[i].claps.length}`)
                         if(filteredByTagCopy[j].claps.length > filteredByTagCopy[i].claps.length){
                             // console.log("swap")
@@ -258,6 +264,10 @@ export class Controller {
                 const finalFiltered = filteredByTagAndClap.filter((post) => {
                     return post.title.toUpperCase().includes(keyword.toUpperCase())
                 })
+                // console.log(page)
+                // console.log(perPage)
+
+                console.log(finalFiltered.slice(perPage * page, perPage * (page + 1)))
                 res.send(finalFiltered.slice(perPage * page, perPage * (page + 1)))
                 
             }catch(err){
@@ -265,7 +275,7 @@ export class Controller {
             }
         }else if (sortBy === "time"){
             try{
-                filteredByTagAndTime = await postModel.find({ "tags" : { $all : tags } }).sort([["postTime" , -1]]);
+                filteredByTagAndTime = await postModel.find({ "tags" : { $all : tags } }).sort([["postTime" , -1]]).populate("user");
                 const finalFiltered = filteredByTagAndTime.filter((post) => {
                         return post.title.toUpperCase().includes(keyword.toUpperCase())
                     })
