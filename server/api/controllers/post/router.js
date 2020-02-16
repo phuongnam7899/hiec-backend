@@ -1,6 +1,6 @@
 import * as express from "express"
 import Controller from "./controller"
-
+ 
 export default express.Router()
                         .post("/", Controller.createNewPost)
                         .get("/:id", Controller.getPostByID)

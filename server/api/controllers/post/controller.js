@@ -182,31 +182,46 @@ export class Controller {
 
     async getRecent(req,res){
         const number = req.body.number;
-        const sortedByTime = await postModel.find().sort([["postTime" , -1]]).limit(number)
-        res.send(sortedByTime)
+        const sortedByTime = await postModel.find().sort([["postTime" , -1]]).limit(number).populate("user");
+        let arrayPost = []
+        sortedByTime.forEach(post=>{
+            let newPost = JSON.parse(JSON.stringify(post))
+            delete newPost.user.account;
+            arrayPost.push( newPost );
+        
+        })
+        res.send(arrayPost);
     }
     async getHotPost(req,res){
         const {number,limit} = req.body.number;
         try{
-            const sortedByTime = await postModel.find().sort([["postTime" , -1]]).limit(limit)
+            const sortedByTime = await postModel.find().sort([["postTime" , -1]]).limit(30).populate("user");
+
             const sortedByTimeCopy = [...sortedByTime];
-            console.log(sortedByTimeCopy)
+            // console.log(sortedByTimeCopy)
             for(let i = 0; i < sortedByTimeCopy.length - 1; i++){
-                console.log(i)
+                // console.log(i)
                 for(let j = i; j < sortedByTimeCopy.length;j++){
-                    console.log(j)
-                    console.log(`Before : ${sortedByTimeCopy[j].claps.length} - ${sortedByTimeCopy[i].claps.length}`)
+                    // console.log(j)
+                    // console.log(`Before : ${sortedByTimeCopy[j].claps.length} - ${sortedByTimeCopy[i].claps.length}`)
                     if(sortedByTimeCopy[j].claps.length > sortedByTimeCopy[i].claps.length){
-                        console.log("swap")
+                        // console.log("swap")
                         sortedByTimeCopy[j] = [sortedByTimeCopy[i],sortedByTimeCopy[i] = sortedByTimeCopy[j]][0]
-                        console.log(`After : ${sortedByTimeCopy[j].claps.length} - ${sortedByTimeCopy[i].claps.length}`)
+                        // console.log(`After : ${sortedByTimeCopy[j].claps.length} - ${sortedByTimeCopy[i].claps.length}`)
                     }
                 }
             }
+            let arrayPost = []
+            sortedByTimeCopy.forEach(post=>{
+                let newPost = JSON.parse(JSON.stringify(post))
+                delete newPost.user.account;
+                arrayPost.push( newPost );
+            
+            })
             if(number <= sortedByTimeCopy.length ){
-                res.send(sortedByTimeCopy.slice(0,number - 1))
+                res.send(arrayPost.slice(0,number - 1))
             }else{
-                res.send(sortedByTimeCopy)
+                res.send(arrayPost)
             }
         }catch(err){
             res.send(err)
