@@ -193,7 +193,7 @@ export class Controller {
         res.send(arrayPost);
     }
     async getHotPost(req,res){
-        const {number,limit} = req.body.number;
+        const {number,limit} = req.body;
         try{
             const sortedByTime = await postModel.find().sort([["postTime" , -1]]).limit(30).populate("user");
 
@@ -219,8 +219,11 @@ export class Controller {
             
             })
             if(number <= sortedByTimeCopy.length ){
+                console.log(arrayPost.slice(0,number -1 ))
                 res.send(arrayPost.slice(0,number - 1))
             }else{
+                console.log(number);
+                console.log(sortedByTimeCopy.length)
                 res.send(arrayPost)
             }
         }catch(err){
