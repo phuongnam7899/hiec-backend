@@ -1,6 +1,7 @@
 import postModel from "../../models/post"
 import userModel from "../../models/user"
 // import post from "../../models/post";
+import axios from "axios"
 
 export class Controller {
     async createNewPost(req,res){
@@ -31,8 +32,8 @@ export class Controller {
     }
     async getPostsByUser(req,res){
         const perPage = 10
-        const userID = req.body.id;
         const pageNumber = Math.max(0, req.body.page)
+        const userID = req.body.id;
         console.log(pageNumber);
         const user = await userModel.findById(userID);
         if(!user) res.send("user not found")
@@ -158,7 +159,7 @@ export class Controller {
         const {tagList} = req.body;
         console.log(tagList)
         try{
-            const posts = await postModel.find({ "tags" : { $all : tagList } })
+            const posts = await postModel.find({ "tags" : { $all : tagList } }).sort([["postTime" , -1]])
             console.log(posts)
             res.send(posts)
         }catch(err){
@@ -181,36 +182,109 @@ export class Controller {
 
     async getRecent(req,res){
         const number = req.body.number;
-        const sortedByTime = await postModel.find().sort([["postTime" , -1]]).limit(number)
-        res.send(sortedByTime)
+        const sortedByTime = await postModel.find().sort([["postTime" , -1]]).limit(number).populate("user");
+        let arrayPost = []
+        sortedByTime.forEach(post=>{
+            let newPost = JSON.parse(JSON.stringify(post))
+            delete newPost.user.account;
+            arrayPost.push( newPost );
+        
+        })
+        res.send(arrayPost);
     }
     async getHotPost(req,res){
-        const number = req.body.number;
+        const {number,limit} = req.body;
         try{
-            const sortedByTime = await postModel.find().sort([["postTime" , -1]]).limit(30)
+            const sortedByTime = await postModel.find().sort([["postTime" , -1]]).limit(30).populate("user");
+
             const sortedByTimeCopy = [...sortedByTime];
-            console.log(sortedByTimeCopy)
+            // console.log(sortedByTimeCopy)
             for(let i = 0; i < sortedByTimeCopy.length - 1; i++){
-                console.log(i)
+                // console.log(i)
                 for(let j = i; j < sortedByTimeCopy.length;j++){
-                    console.log(j)
-                    console.log(`Before : ${sortedByTimeCopy[j].claps.length} - ${sortedByTimeCopy[i].claps.length}`)
+                    // console.log(j)
+                    // console.log(`Before : ${sortedByTimeCopy[j].claps.length} - ${sortedByTimeCopy[i].claps.length}`)
                     if(sortedByTimeCopy[j].claps.length > sortedByTimeCopy[i].claps.length){
-                        console.log("swap")
+                        // console.log("swap")
                         sortedByTimeCopy[j] = [sortedByTimeCopy[i],sortedByTimeCopy[i] = sortedByTimeCopy[j]][0]
-                        console.log(`After : ${sortedByTimeCopy[j].claps.length} - ${sortedByTimeCopy[i].claps.length}`)
+                        // console.log(`After : ${sortedByTimeCopy[j].claps.length} - ${sortedByTimeCopy[i].claps.length}`)
                     }
                 }
             }
+            let arrayPost = []
+            sortedByTimeCopy.forEach(post=>{
+                let newPost = JSON.parse(JSON.stringify(post))
+                delete newPost.user.account;
+                arrayPost.push( newPost );
+            
+            })
             if(number <= sortedByTimeCopy.length ){
-                res.send(sortedByTimeCopy.slice(0,number - 1))
+                console.log(arrayPost.slice(0,number -1 ))
+                res.send(arrayPost.slice(0,number - 1))
             }else{
-                res.send(sortedByTimeCopy)
+                console.log(number);
+                console.log(sortedByTimeCopy.length)
+                res.send(arrayPost)
             }
         }catch(err){
             res.send(err)
         }
 
     }
-}
+    async search(req,res){
+        const {tags,keyword,sortBy,page} = req.body;
+        console.log(page)
+        console.log(tags)
+        console.log(tags === ["energy"])
+        console.log(keyword === "")
+        console.log(sortBy === "claps")
+        console.log(page === 0)
+        const perPage = 5;
+        let filteredByTagAndTime;
+        let filteredByTagAndClap;
+        if(sortBy === "claps"){
+            try{
+                const filteredByTag = tags.length > 0 ? await postModel.find({ "tags" : { $all : tags } }).populate("user") : await postModel.find().populate("user")
+                console.log(filteredByTag)
+                const filteredByTagCopy = [...filteredByTag];
+                // console.log(filteredByTagCopy)
+                for(let i = 0; i < filteredByTagCopy.length; i++){
+                    // console.log(i)
+                    for(let j = i; j < filteredByTagCopy.length;j++){
+                        // console.log(j)
+                        // console.log(`Before : ${filteredByTagCopy[j].claps.length} - ${filteredByTagCopy[i].claps.length}`)
+                        if(filteredByTagCopy[j].claps.length > filteredByTagCopy[i].claps.length){
+                            // console.log("swap")
+                            filteredByTagCopy[j] = [filteredByTagCopy[i],filteredByTagCopy[i] = filteredByTagCopy[j]][0]
+                            // console.log(`After : ${filteredByTagCopy[j].claps.length} - ${filteredByTagCopy[i].claps.length}`)
+                        }
+                    }
+                }
+                filteredByTagAndClap = filteredByTagCopy;
+                const finalFiltered = filteredByTagAndClap.filter((post) => {
+                    return post.title.toUpperCase().includes(keyword.toUpperCase())
+                })
+                // console.log(page)
+                // console.log(perPage)
+
+                console.log(finalFiltered.slice(perPage * page, perPage * (page + 1)))
+                res.send(finalFiltered.slice(perPage * page, perPage * (page + 1)))
+                
+            }catch(err){
+                console.log(err)
+            }
+        }else if (sortBy === "time"){
+            try{
+                filteredByTagAndTime = tags.length > 0 ? await postModel.find({ "tags" : { $all : tags } }).sort([["postTime" , -1]]).populate("user")
+                                    : await postModel.find().sort([["postTime" , -1]]).populate("user");
+                const finalFiltered = filteredByTagAndTime.filter((post) => {
+                        return post.title.toUpperCase().includes(keyword.toUpperCase())
+                    })
+                    res.send(finalFiltered)
+                
+            }catch(err){
+                console.log(err)
+            }
+        }
+}}
 export default new Controller();

@@ -169,10 +169,10 @@ export class Controller {
         res.send(sortedByTime)
     }
     async getHotNews(req,res){
-        const {number,category} = req.body;
+        const {number,category,limit} = req.body;
         console.log(req.body)
         try{
-            const sortedByTime = await newsModel.find({category : category}).sort([["postTime" , -1]]).limit(30)
+            const sortedByTime = await newsModel.find({category : category}).sort([["postTime" , -1]]).limit(limit)
             const sortedByTimeCopy = [...sortedByTime];
             console.log(sortedByTimeCopy)
             for(let i = 0; i < sortedByTimeCopy.length - 1; i++){
@@ -197,5 +197,60 @@ export class Controller {
         }
 
     }
+    async search(req,res){
+        const {tags,keyword,sortBy,page} = req.body;
+        console.log(page)
+        console.log(tags)
+        console.log(tags === ["energy"])
+        console.log(keyword === "")
+        console.log(sortBy === "claps")
+        console.log(page === 0)
+        const perPage = 5;
+        let filteredByTagAndTime;
+        let filteredByTagAndClap;
+        if(sortBy === "claps"){
+            try{
+                const filteredByTag = tags.length > 0 ? await newsModel.find({ "tags" : { $all : tags } }).populate("user") : await newsModel.find().populate("user")
+                console.log(filteredByTag)
+                const filteredByTagCopy = [...filteredByTag];
+                // console.log(filteredByTagCopy)
+                for(let i = 0; i < filteredByTagCopy.length; i++){
+                    // console.log(i)
+                    for(let j = i; j < filteredByTagCopy.length;j++){
+                        // console.log(j)
+                        // console.log(`Before : ${filteredByTagCopy[j].claps.length} - ${filteredByTagCopy[i].claps.length}`)
+                        if(filteredByTagCopy[j].claps.length > filteredByTagCopy[i].claps.length){
+                            // console.log("swap")
+                            filteredByTagCopy[j] = [filteredByTagCopy[i],filteredByTagCopy[i] = filteredByTagCopy[j]][0]
+                            // console.log(`After : ${filteredByTagCopy[j].claps.length} - ${filteredByTagCopy[i].claps.length}`)
+                        }
+                    }
+                }
+                filteredByTagAndClap = filteredByTagCopy;
+                const finalFiltered = filteredByTagAndClap.filter((post) => {
+                    return post.title.toUpperCase().includes(keyword.toUpperCase())
+                })
+                // console.log(page)
+                // console.log(perPage)
+
+                console.log(finalFiltered.slice(perPage * page, perPage * (page + 1)))
+                res.send(finalFiltered.slice(perPage * page, perPage * (page + 1)))
+                
+            }catch(err){
+                console.log(err)
+            }
+        }else if (sortBy === "time"){
+            try{
+                filteredByTagAndTime = tags.length > 0 ? await newsModel.find({ "tags" : { $all : tags } }).sort([["postTime" , -1]]).populate("user") : await newsModel.find().sort([["postTime" , -1]]).populate("user") ;
+                const finalFiltered = filteredByTagAndTime.filter((post) => {
+                        return post.title.toUpperCase().includes(keyword.toUpperCase())
+                    })
+                    res.send(finalFiltered)
+                
+            }catch(err){
+                console.log(err)
+            }
+        }
+}
 }
 export default new Controller();
