@@ -39,10 +39,11 @@ export class Controller {
                             arrayPosts.push(object)
                         }
                     })
-                    // arrayPosts.sort(function Value(a, b) {
-                    //     return b.numberOfPosts - a.numberOfPosts;
-                    // })
-                    return arrayPosts.splice(1).reverse().slice(0,10);
+                    arrayPosts.sort(function Value(a, b) {
+                        return b.score - a.score;
+                    })
+   
+                    return arrayPosts.splice(1).slice(0,10);
 
             }catch(err){
                 console.log(err)
