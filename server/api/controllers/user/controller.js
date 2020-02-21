@@ -3,8 +3,10 @@ import postModel from "../../models/post"
 
 export class Controller {
     changePassword(req,res){
-        const {id} = req.params
-        const {oldPassword,newPassword} = req.body
+        const {oldPassword,newPassword} = req.body;
+        const {id} = req.params;
+        // console.log(_id);
+        try{
         userModel.findById(id)
         .then((userFound)=>{
             if(userFound){
@@ -12,15 +14,24 @@ export class Controller {
                 if(userFound.account.password === oldPassword){
                     userModel.findByIdAndUpdate(id,{"account.password":newPassword})
                     .then(()=>{
-                        res.status(200).send("change password")
+                        res.json({
+                            message : "Đổi mật khẩu thành công",
+                            success : 1
+                        })
                     })
-                }else{
-                    res.status(405).send("Invalid old password")
                 }
-            }else{
-                res.status(405).send("Invalid ID")
+                else{
+                    res.json({
+                        message : "Mật khẩu cũ không đúng",
+                        success : 0
+                    })
+                }
             }
         })
+        }
+        catch(err){
+            res.send(err);
+        }
     }
     updateInfo(req,res){
         const {id} = req.params
