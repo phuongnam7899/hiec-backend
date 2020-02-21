@@ -24,8 +24,10 @@ export class Controller {
     getPostByID(req,res){
         const postID = req.params.id;
         if(postID) {
-            postModel.findById(postID).then((postFound) => {
-                if(postFound) res.send(postFound)
+            postModel.findById(postID).populate("user").populate("comments.user").then((postFound) => {
+                if(postFound) {
+                    res.send(postFound)
+                }
                 else res.send("Post not found")
             }).catch(err => res.send(err))
         }
