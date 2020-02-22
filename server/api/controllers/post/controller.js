@@ -161,7 +161,7 @@ export class Controller {
         const {tagList} = req.body;
         console.log(tagList)
         try{
-            const posts = await postModel.find({ "tags" : { $all : tagList } }).sort([["postTime" , -1]])
+            const posts = await postModel.find({ "tags" : { $all : tagList } }).sort([["postTime" , -1]]).populate("user");
             console.log(posts)
             res.send(posts)
         }catch(err){
