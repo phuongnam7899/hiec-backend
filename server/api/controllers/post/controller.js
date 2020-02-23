@@ -40,6 +40,8 @@ export class Controller {
     if (postID) {
       postModel
         .findById(postID)
+        .populate("user")
+        .populate("comments.user")
         .then(postFound => {
           if (postFound) res.send(postFound);
           else res.send("Post not found");
