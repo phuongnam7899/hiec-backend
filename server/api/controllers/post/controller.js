@@ -353,7 +353,7 @@ export class Controller {
         const finalFiltered = filteredByTagAndTime.filter(post => {
           return post.title.toUpperCase().includes(keyword.toUpperCase());
         });
-        res.send(finalFiltered);
+        res.send(finalFiltered.slice(perPage * page, perPage * (page + 1)));
       } catch (err) {
         console.log(err);
       }
