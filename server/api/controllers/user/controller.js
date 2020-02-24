@@ -14,18 +14,13 @@ export class Controller {
                 if(userFound.account.password === oldPassword){
                     userModel.findByIdAndUpdate(id,{"account.password":newPassword})
                     .then(()=>{
-                        res.json({
-                            message : "Đổi mật khẩu thành công",
-                            success : 1
-                        })
+                        res.status(200).send({success : 1})
                     })
+                }else{
+                    res.send({success : 0, message : "Mật khẩu cũ không chính xác"})
                 }
-                else{
-                    res.json({
-                        message : "Mật khẩu cũ không đúng",
-                        success : 0
-                    })
-                }
+            }else{
+                res.send("Invalid ID")
             }
         })
         }

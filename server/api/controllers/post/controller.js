@@ -274,6 +274,7 @@ export class Controller {
                 console.log(err)
             }
         }else if (sortBy === "time"){
+        
             try{
                 filteredByTagAndTime = tags.length > 0 ? await postModel.find({ "tags" : { $all : tags } }).sort([["postTime" , -1]]).populate("user")
                                     : await postModel.find().sort([["postTime" , -1]]).populate("user");
