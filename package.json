@@ -27,7 +27,7 @@
     "ioredis": "^4.9.3",
     "jsonwebtoken": "^8.5.1",
     "jwt-decode": "^2.2.0",
-    "mongoose": "^5.5.8",
+    "mongoose": "^5.7.5",
     "morgan": "^1.9.1",
     "pino": "^5.11.1",
     "redis": "^2.8.0",
