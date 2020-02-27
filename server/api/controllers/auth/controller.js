@@ -20,7 +20,7 @@ export class Controller {
                                 tokenModel.create({token : token, userID : userInfo._id}).then((tokenCreated) => {
                                     // console.log(tokenCreated)
                                 })
-                                console.log(userInfo)
+                                // console.log(userInfo)
                                 delete userInfo.account;
                                 const responseData = {token,userInfo};
                                 res.status(200).send(responseData)
@@ -32,10 +32,10 @@ export class Controller {
     }
     signOut(req,res){
         const token = req.body.token || req.query.token || req.headers['x-access-token'];
-        console.log(token)
+        // console.log(token)
         tokenModel.findOneAndUpdate({token : token, isActive : true},{isActive : false}).then((updatedToken) => {
             if(updatedToken){
-                console.log(updatedToken)
+                // console.log(updatedToken)
                 res.send("Logged out")
             }else{
                 res.send("Token invalid")
