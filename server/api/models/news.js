@@ -9,6 +9,7 @@ const NewsSchema = new Schema({
     postTime : {type : String, require : true},
     title : {type : String},
     content : {type : String, require : true},
-    viewer : [String]
+    viewer : [String],
+    isGhimed : {type : Boolean}
 })
 export default Model("new",NewsSchema);

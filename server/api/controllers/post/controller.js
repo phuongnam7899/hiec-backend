@@ -282,6 +282,7 @@ export class Controller {
       } else {
         // console.log(number);
         // console.log(sortedByTimeCopy.length);
+        // console.log(arrayPost)
         res.send(arrayPost);
       }
     } catch (err) {
