@@ -53,7 +53,7 @@ export class Controller {
     const perPage = 10;
     const pageNumber = Math.max(0, req.body.page);
     const userID = req.body.id;
-    console.log(pageNumber);
+    // console.log(pageNumber);
     const user = await userModel.findById(userID);
     if (!user) res.send("user not found");
     else {
@@ -90,7 +90,7 @@ export class Controller {
     const { userID, postID } = req.body;
     checkUserAndDoSth(userID, async () => {
       const postBefore = await postModel.findById(postID);
-      console.log(postBefore);
+      // console.log(postBefore);
       if (!postBefore) res.send("post not found");
       else {
         const clapsBefore = [...postBefore.claps];
@@ -100,7 +100,7 @@ export class Controller {
         } else {
           clapsBefore.splice(index, 1)
         }
-        console.log(clapsBefore);
+        // console.log(clapsBefore);
         postModel
           .findByIdAndUpdate(postID, { claps: clapsBefore })
           .then(beforeUpdated => {
@@ -179,7 +179,7 @@ export class Controller {
             // console.log(userID)
             const viewersBefore = [...postBefore.viewers];
             viewersBefore.push(userID);
-            console.log(viewersBefore);
+            // console.log(viewersBefore);
 
             postModel
               .findByIdAndUpdate(postID, { viewers: viewersBefore })
@@ -201,13 +201,13 @@ export class Controller {
   }
   async searchByTag(req, res) {
     const { tagList } = req.body;
-    console.log(tagList);
+    // console.log(tagList);
     try {
       const posts = await postModel
         .find({ tags: { $all: tagList } })
         .sort([["postTime", -1]])
         .populate("user");
-      console.log(posts);
+      // console.log(posts);
       res.send(posts);
     } catch (err) {
       res.send(err);
@@ -215,7 +215,7 @@ export class Controller {
   }
   async searchByKeyword(req, res) {
     const keyword = req.query.keyword;
-    console.log(keyword);
+    // console.log(keyword);
     try {
       const posts = await postModel.find();
       const foundList = posts.filter(post => {
@@ -277,11 +277,11 @@ export class Controller {
         arrayPost.push(newPost);
       });
       if (number <= sortedByTimeCopy.length) {
-        console.log(arrayPost.slice(0, number - 1));
+        // console.log(arrayPost.slice(0, number - 1));
         res.send(arrayPost.slice(0, number - 1));
       } else {
-        console.log(number);
-        console.log(sortedByTimeCopy.length);
+        // console.log(number);
+        // console.log(sortedByTimeCopy.length);
         res.send(arrayPost);
       }
     } catch (err) {
@@ -290,12 +290,12 @@ export class Controller {
   }
   async search(req, res) {
     const { tags, keyword, sortBy, page } = req.body;
-    console.log(page);
-    console.log(tags);
-    console.log(tags === ["energy"]);
-    console.log(keyword === "");
-    console.log(sortBy === "claps");
-    console.log(page === 0);
+    // console.log(page);
+    // console.log(tags);
+    // console.log(tags === ["energy"]);
+    // console.log(keyword === "");
+    // console.log(sortBy === "claps");
+    // console.log(page === 0);
     const perPage = 5;
     let filteredByTagAndTime;
     let filteredByTagAndClap;
@@ -305,7 +305,7 @@ export class Controller {
           tags.length > 0
             ? await postModel.find({ tags: { $all: tags } }).populate("user")
             : await postModel.find().populate("user");
-        console.log(filteredByTag);
+        // console.log(filteredByTag);
         const filteredByTagCopy = [...filteredByTag];
         // console.log(filteredByTagCopy)
         for (let i = 0; i < filteredByTagCopy.length; i++) {
@@ -333,7 +333,7 @@ export class Controller {
         // console.log(page)
         // console.log(perPage)
 
-        console.log(finalFiltered.slice(perPage * page, perPage * (page + 1)));
+        // console.log(finalFiltered.slice(perPage * page, perPage * (page + 1)));
         res.send(finalFiltered.slice(perPage * page, perPage * (page + 1)));
       } catch (err) {
         console.log(err);

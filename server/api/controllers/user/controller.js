@@ -10,7 +10,7 @@ export class Controller {
         userModel.findById(id)
         .then((userFound)=>{
             if(userFound){
-                console.log(typeof(userFound.account.password))
+                // console.log(typeof(userFound.account.password))
                 if(userFound.account.password === oldPassword){
                     userModel.findByIdAndUpdate(id,{"account.password":newPassword})
                     .then(()=>{
@@ -45,7 +45,7 @@ export class Controller {
         }
         userModel.findByIdAndUpdate(id,{"profile":profile})
         .then(success=>{
-            console.log(success)
+            // console.log(success)
             if(success){
                 res.status(200).send(success)
             }else{
@@ -94,7 +94,7 @@ export class Controller {
         const { email, password, name, dob, isWorking } = req.body
         userModel.findOne({"account.email":email})
             .then((userFound) => {
-                console.log(userFound)
+                // console.log(userFound)
                 if (userFound) {
                     res.status(405).send("Account existed")
                 }

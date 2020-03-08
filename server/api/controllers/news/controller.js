@@ -124,7 +124,7 @@ export class Controller {
   }
   async getHotNews(req, res) {
     const { number, category, limit } = req.body;
-    console.log(req.body);
+    // console.log(req.body);
     try {
       const sortedByTime = await newsModel
         .find({ category: category })
@@ -151,10 +151,10 @@ export class Controller {
         }
       }
       if (number <= sortedByTimeCopy.length) {
-        console.log(sortedByTimeCopy.slice(0, number));
+        // console.log(sortedByTimeCopy.slice(0, number));
         res.send(sortedByTimeCopy.slice(0, number));
       } else {
-        console.log(sortedByTimeCopy);
+        // console.log(sortedByTimeCopy);
         res.send(sortedByTimeCopy);
       }
     } catch (err) {
@@ -164,7 +164,7 @@ export class Controller {
   }
   async search(req, res) {
     const { tags, keyword, sortBy, page, category } = req.body;
-    console.log(req.body);
+    // console.log(req.body);
     const perPage = 5;
     let filteredByTagAndTime;
     let filteredByTagAndClap;
@@ -174,7 +174,7 @@ export class Controller {
           tags.length > 0
             ? await newsModel.find({ tags: { $all: tags }, category: category })
             : await newsModel.find({ category: category });
-        console.log(filteredByTag);
+        // console.log(filteredByTag);
         const filteredByTagCopy = [...filteredByTag];
         // console.log(filteredByTagCopy)
         for (let i = 0; i < filteredByTagCopy.length; i++) {
