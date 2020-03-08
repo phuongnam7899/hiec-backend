@@ -14,7 +14,8 @@ export class Controller {
         postTime,
         title,
         content,
-        category
+        category,
+        isGhimed: false,
       });
       res.send(newNews);
     } catch (err) {
@@ -122,6 +123,38 @@ export class Controller {
       .limit(number);
     res.send(sortedByTime);
   }
+
+  async ghimNews(req,res) {
+    const {id} = req.body;
+    try{
+      const news = await newsModel.findById(id);
+      if(news){
+        console.log(news)
+        const updateOld = await newsModel.findOneAndUpdate({isGhimed:true,category: news.category},{isGhimed : false});
+        const updateNew = await newsModel.findByIdAndUpdate(id,{isGhimed: true})
+        res.send("Update bài ghim thành công")
+      }else{
+        throw new Error({"message" : "ID SAI"})
+      }
+    }catch(err){
+      res.send(err)
+    }
+  }
+
+  async getGhimNews(req,res) {
+    const {category} = req.params;
+    try{
+      const ghimNews = await newsModel.findOne({isGhimed:true,category:category});
+      if(ghimNews){
+          res.send(ghimNews)
+      }else{
+        throw new Error("Not found ghim News")
+      }
+    }catch(err){
+      res.send(err)
+    }
+  }
+
   async getHotNews(req, res) {
     const { number, category, limit } = req.body;
     // console.log(req.body);
@@ -226,5 +259,7 @@ export class Controller {
       }
     }
   }
+
+ 
 }
 export default new Controller();
