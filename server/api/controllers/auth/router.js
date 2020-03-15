@@ -5,3 +5,4 @@ export default express
                 .Router()
                 .post("/sign-in", Controller.signIn)
                 .get("/sign-out", Controller.signOut)
+                .post("/register", Controller.register)
