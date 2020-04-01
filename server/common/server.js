@@ -25,6 +25,7 @@ export default class ExpressServer {
         reconnectInterval: 500,
         autoReconnect: true,
         useNewUrlParser: true,
+        useUnifiedTopology: true,
         dbName: 'hiec-web'
       }
     )
