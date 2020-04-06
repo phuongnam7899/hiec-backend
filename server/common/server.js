@@ -44,7 +44,7 @@ export default class ExpressServer {
     app.use(bodyParser.urlencoded({ extended: true, limit: process.env.REQUEST_LIMIT || '50mb' }));
     //nhớ thêm dòng này để link vs frontend
     app.use(cors({
-      origin: ["http://localhost:3000","https://hiec.netlify.com","https://xenodochial-payne-b5f677.netlify.com"],
+      origin: ["http://localhost:3000","https://hiec.netlify.com","https://hiec.vn"],
       credentials: true
     }));
     app.use(cookieParser(process.env.SESSION_SECRET));
