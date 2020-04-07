@@ -4,6 +4,7 @@ import * as bodyParser from 'body-parser';
 import * as http from 'http';
 import * as os from 'os';
 import cookieParser from 'cookie-parser';
+const serverless = require("serverless-http")
 const mongoose = require("mongoose");
 
 import swaggerify from './swagger';
@@ -13,7 +14,7 @@ import l from './logger';
 //npm i cors nhé
 const cors = require('cors');
 
-const app = new Express();
+const app =  new Express();
 
 export default class ExpressServer {
   constructor() {
@@ -42,7 +43,7 @@ export default class ExpressServer {
     app.use(bodyParser.urlencoded({ extended: true, limit: process.env.REQUEST_LIMIT || '50mb' }));
     //nhớ thêm dòng này để link vs frontend
     app.use(cors({
-      origin: ["http://localhost:3000","https://xtutor.herokuapp.com"],
+      origin: ["http://localhost:3000","https://hiec.netlify.com","https://xenodochial-payne-b5f677.netlify.com"],
       credentials: true
     }));
     app.use(cookieParser(process.env.SESSION_SECRET));
@@ -59,6 +60,6 @@ export default class ExpressServer {
   listen(port = process.env.PORT) {
     const welcome = p => () => l.info(`up and running in ${process.env.NODE_ENV || 'development'} @: ${os.hostname()} on port: ${p}}`);
     http.createServer(app).listen(port, welcome(port));
-    return app;
+    return serverless(app);
   }
 }
