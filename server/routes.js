@@ -1,5 +1,6 @@
 const bodyParser = require("../node_modules/body-parser");
 const morgan = require('../node_modules/morgan');
+import * as express from 'express';
 const jwt = require('../node_modules/jsonwebtoken');
 import authRouter from "./api/controllers/auth/router";
 import tokenModel from "./api/models/token";
@@ -39,4 +40,7 @@ export default function routes(app) {
   });
   app.use("/api/post",postRouter);
   app.use("/api/user",userRouter);
+  // app.use("", express.Router().get("/loaderio-2e3f26955ceebd87d89876f3d7468762", (req,res) => {
+  //   res.send("check")
+  // }))
 }
