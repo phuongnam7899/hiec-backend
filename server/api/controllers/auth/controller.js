@@ -1,3 +1,11 @@
+<<<<<<< HEAD
+export class Controller {
+    getOne(req,res){
+        res.send("hello")
+    }
+}
+export default new Controller()
+=======
 import userModel from "../../models/user"
 import tokenModel from "../../models/token"
 import jwt from "jsonwebtoken"
@@ -76,3 +84,4 @@ export class Controller {
     }
 }
 export default new Controller();
+>>>>>>> 353eed7e8e00debfac8ca07d6985e5eb88aa3d7b
