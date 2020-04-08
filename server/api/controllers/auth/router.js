@@ -1,5 +1,5 @@
- import Controller from "./controller"
-import * as express from "express";
+import Controller from './controller';
+import * as express from 'express';
 
 export default express
                 .Router()
