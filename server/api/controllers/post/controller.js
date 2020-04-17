@@ -44,7 +44,13 @@ export class Controller {
         .populate("user")
         .populate("comments.user")
         .then(postFound => {
-          if (postFound) res.send(postFound);
+          if (postFound){
+                postFound.user.account = {}
+                postFound.comments.forEach((comment)=>{
+                  comment.user.account = {}
+                })
+                res.send(postFound);
+            }
           else res.send("Post not found");
         })
         .catch(err => res.send(err));
@@ -214,6 +220,10 @@ export class Controller {
         .find({ tags: { $all: tagList } })
         .sort([["postTime", -1]])
         .populate("user");
+      
+      posts.forEach((post)=>{
+        post.user.account = {}
+      })
       // console.log(posts);
       res.send(posts);
     } catch (err) {
@@ -315,7 +325,8 @@ export class Controller {
             : await postModel.find().populate("user");
         // console.log(filteredByTag);
         const filteredByTagCopy = [...filteredByTag];
-        // console.log(filteredByTagCopy)
+       
+
         for (let i = 0; i < filteredByTagCopy.length; i++) {
           // console.log(i)
           for (let j = i; j < filteredByTagCopy.length; j++) {
@@ -342,7 +353,11 @@ export class Controller {
         // console.log(perPage)
 
         // console.log(finalFiltered.slice(perPage * page, perPage * (page + 1)));
-        res.send(finalFiltered.slice(perPage * page, perPage * (page + 1)));
+        const postSent = finalFiltered.slice(perPage * page, perPage * (page + 1))
+        postSent.forEach((post)=>{
+          post.user.account = {}
+        })
+        res.send(postSent);
       } catch (err) {
         console.log(err);
       }
@@ -361,7 +376,11 @@ export class Controller {
         const finalFiltered = filteredByTagAndTime.filter(post => {
           return post.title.toUpperCase().includes(keyword.toUpperCase());
         });
-        res.send(finalFiltered.slice(perPage * page, perPage * (page + 1)));
+        const postSent = finalFiltered.slice(perPage * page, perPage * (page + 1))
+        postSent.forEach((post)=>{
+          post.user.account = {}
+        })
+        res.send(postSent);
       } catch (err) {
         console.log(err);
       }
