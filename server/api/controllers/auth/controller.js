@@ -67,7 +67,7 @@ export class Controller {
                                 describe: new Object // jobTitle - companyName or school - major
                             },
                             address: "",
-                            avatar: "https://i.pinimg.com/236x/8c/87/6e/8c876ed0976c074a8e7664fc21422fb0.jpg" 
+                            avatar: "https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcQcVTlEXUHIyBJGKGKRcdKVOYhb22zka6_CZ0VwJ4z2c7wSlWw6&usqp=CAU" 
                         }
                     })
                     res.status(200).send("Account has been created")

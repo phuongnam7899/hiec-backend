@@ -12,17 +12,10 @@ export class Controller {
             try {
                 const findPost = await postModel.find({ postTime: { $gte: (now - limit) } }).sort("user").populate("user")
                     let object = {
-                        // userId: "user đểu nhé",
-                        // name: "Không có tên",
-                        // score: 0,
-                        // avatar : ""
-                        
                     }
                     let arrayPosts = [];
                     let count = 0;
-                    // console.log(findPost)
                     findPost.forEach((post) => {
-                        // console.log(object.userId)
                         count++ 
                         if ( post.user && (post.user._id !== object.userId)) {
                             arrayPosts.push(object)
@@ -51,9 +44,9 @@ export class Controller {
             }
         }
         let respondData = {
-            week: await findUserMostPosts(week),
+            // week: await findUserMostPosts(week),
             month: await findUserMostPosts(month),
-            year: await findUserMostPosts(year),
+            // year: await findUserMostPosts(year),
         }
         res.status(200).send(respondData)
     }
