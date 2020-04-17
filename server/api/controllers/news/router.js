@@ -4,7 +4,7 @@ import Controller from "./controller"
 export default express.Router()
                         .post("/", Controller.createNewNews)
                         .get("/:id", Controller.getNewsByID)
-                        .delete("/:id", Controller.deleteNewsByID)
+                        .delete("/:id/:userID/:token", Controller.deleteNewsByID)
                         .put("/add-view", Controller.addView)
                         .get("/search/by-keyword", Controller.searchByKeyword)
                         .post("/search/by-tag", Controller.searchByTag)

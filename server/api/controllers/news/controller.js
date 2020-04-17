@@ -1,23 +1,34 @@
 import newsModel from "../../models/news";
 import userModel from "../../models/user";
+import tokenModel from "../../models/token";
 
 export class Controller {
   async createNewNews(req, res) {
-    const { category, tags, postTime, title, content } = req.body;
+    const { category, tags, postTime, title, content, token, userID } = req.body;
     const emptyNews = {
       viewer: []
     };
+
+    const tokenFound = await  tokenModel.findOne({ token: token })
+    const userFound =  await userModel.findById(userID)
+
     try {
-      const newNews = await newsModel.create({
-        ...emptyNews,
-        tags,
-        postTime,
-        title,
-        content,
-        category,
-        isGhimed: false,
-      });
-      res.send(newNews);
+      if (tokenFound && tokenFound.userID === userID && userFound.isAdmin) {
+        console.log("helloo1")
+        const newNews = await newsModel.create({
+          ...emptyNews,
+          tags,
+          postTime,
+          title,
+          content,
+          category,
+          isGhimed: false,
+        });
+        console.log("hello2")
+        res.send(newNews);
+      } else {
+        throw new Error({ message: "hacker khong co phan su o day" })
+      }
     } catch (err) {
       res.send(err);
     }
@@ -39,9 +50,19 @@ export class Controller {
   async deleteNewsByID(req, res) {
     //TO-DO : user gửi req phải là chủ của bài viết
     const newsID = req.params.id;
+    const { userID, token } = req.params;
+    console.log(userID,token)
+    const tokenFound = await tokenModel.findOne({ token: token })
+    const userFound = await userModel.findById(userID)
+    console.log(tokenFound,userFound)
     try {
-      const deletedNews = await newsModel.findByIdAndDelete(newsID);
-      res.send(deletedNews);
+      if (tokenFound && tokenFound.userID === userID && userFound.isAdmin) {
+        const deletedNews = await newsModel.findByIdAndDelete(newsID);
+        console.log("delete")
+        res.send(deletedNews);
+      } else {
+        throw new Error({ message: "Hacker ???" })
+      }
     } catch (err) {
       res.send(err);
     }
@@ -79,8 +100,8 @@ export class Controller {
         } catch (err) {
           res.send(err);
         }
-      }else{
-          res.send({success : 0, message : "user undefined"})
+      } else {
+        res.send({ success: 0, message: "user undefined" })
       }
     } catch (err) {
       console.log(err);
@@ -124,33 +145,41 @@ export class Controller {
     res.send(sortedByTime);
   }
 
-  async ghimNews(req,res) {
-    const {id} = req.body;
-    try{
-      const news = await newsModel.findById(id);
-      if(news){
-        console.log(news)
-        const updateOld = await newsModel.findOneAndUpdate({isGhimed:true,category: news.category},{isGhimed : false});
-        const updateNew = await newsModel.findByIdAndUpdate(id,{isGhimed: true})
-        res.send("Update bài ghim thành công");
-      }else{
-        throw new Error({"message" : "ID SAI"});
+  async ghimNews(req, res) {
+    const { id, token, userID } = req.body;
+    const tokenFound = await tokenModel.findOne({ token: token })
+    const userFound = await userModel.findById(userID)
+    console.log(tokenFound)
+    try {
+      if (tokenFound && tokenFound.userID === userID && userFound.isAdmin) {
+        const news = await newsModel.findById(id);
+        if (news) {
+          console.log(news)
+          const updateOld = await newsModel.findOneAndUpdate({ isGhimed: true, category: news.category }, { isGhimed: false });
+          const updateNew = await newsModel.findByIdAndUpdate(id, { isGhimed: true })
+          res.send("Update bài ghim thành công");
+        } else {
+          throw new Error({ "message": "ID SAI" });
+        }
+      } else {
+        throw new Error({ "message": "THIẾU/SAI TOKEN" });
       }
-    }catch(err){
+
+    } catch (err) {
       res.send(err)
     }
   }
 
-  async getGhimNews(req,res) {
-    const {category} = req.params;
-    try{
-      const ghimNews = await newsModel.findOne({isGhimed:true,category:category});
-      if(ghimNews){
-          res.send(ghimNews)
-      }else{
+  async getGhimNews(req, res) {
+    const { category } = req.params;
+    try {
+      const ghimNews = await newsModel.findOne({ isGhimed: true, category: category });
+      if (ghimNews) {
+        res.send(ghimNews)
+      } else {
         throw new Error("Not found ghim News")
       }
-    }catch(err){
+    } catch (err) {
       res.send(err)
     }
   }
@@ -245,11 +274,11 @@ export class Controller {
         filteredByTagAndTime =
           tags.length > 0
             ? await newsModel
-                .find({ tags: { $all: tags }, category: category })
-                .sort([["postTime", -1]])
+              .find({ tags: { $all: tags }, category: category })
+              .sort([["postTime", -1]])
             : await newsModel
-                .find({ category: category })
-                .sort([["postTime", -1]]);
+              .find({ category: category })
+              .sort([["postTime", -1]]);
         const finalFiltered = filteredByTagAndTime.filter(post => {
           return post.title.toUpperCase().includes(keyword.toUpperCase());
         });
@@ -260,6 +289,6 @@ export class Controller {
     }
   }
 
- 
+
 }
 export default new Controller();
