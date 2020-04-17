@@ -12,8 +12,7 @@ export class Controller {
                             if(!userFound) res.status(401).send({message : "Wrong email or password"});
                             else{
                                 const payload = {
-                                    email: email,
-                                    password: password
+                                    email: email
                                 }
                                 const token = jwt.sign(payload, process.env.SECRET_KEY);
                                 const userInfo = JSON.parse(JSON.stringify(userFound));
