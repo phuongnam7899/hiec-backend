@@ -1,5 +1,6 @@
 import postModel from "../../models/post";
 import userModel from "../../models/user";
+import tokenModel from "../../models/token"
 // import post from "../../models/post";
 import axios from "axios";
 
@@ -87,31 +88,38 @@ export class Controller {
   }
   async addClap(req, res) {
     //TO-DO : user cần tồn tại
-    const { userID, postID } = req.body;
-    checkUserAndDoSth(userID, async () => {
-      const postBefore = await postModel.findById(postID);
-      // console.log(postBefore);
-      if (!postBefore) res.send("post not found");
-      else {
-        const clapsBefore = [...postBefore.claps];
-        const index = clapsBefore.indexOf(userID);
-        if (index == -1) {
-          clapsBefore.push(userID);
-        } else {
-          clapsBefore.splice(index, 1)
-        }
-        // console.log(clapsBefore);
-        postModel
-          .findByIdAndUpdate(postID, { claps: clapsBefore })
-          .then(beforeUpdated => {
-            res.send({
-              message: "updated successfully",
-              data: beforeUpdated
-            });
-          })
-          .catch(err => res.send(err));
+    const { userID, postID, token } = req.body;
+    const tokenFound = await tokenModel.findOne({token : token})
+    if(tokenFound){
+      if(tokenFound.userID === userID){
+        checkUserAndDoSth(userID, async () => {
+          const postBefore = await postModel.findById(postID);
+          // console.log(postBefore);
+          if (!postBefore) res.send("post not found");
+          else {
+            const clapsBefore = [...postBefore.claps];
+            const index = clapsBefore.indexOf(userID);
+            if (index == -1) {
+              clapsBefore.push(userID);
+            } else {
+              clapsBefore.splice(index, 1)
+            }
+            // console.log(clapsBefore);
+            postModel
+              .findByIdAndUpdate(postID, { claps: clapsBefore })
+              .then(beforeUpdated => {
+                res.send({
+                  message: "updated successfully",
+                  data: beforeUpdated
+                });
+              })
+              .catch(err => res.send(err));
+          }
+        });
+      }else{
+        res.send("Fail")
       }
-    });
+    }
   }
 
   async addComment(req, res) {
@@ -180,7 +188,6 @@ export class Controller {
             const viewersBefore = [...postBefore.viewers];
             viewersBefore.push(userID);
             // console.log(viewersBefore);
-
             postModel
               .findByIdAndUpdate(postID, { viewers: viewersBefore })
               .then(beforeUpdated => {

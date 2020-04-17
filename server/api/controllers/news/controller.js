@@ -132,9 +132,9 @@ export class Controller {
         console.log(news)
         const updateOld = await newsModel.findOneAndUpdate({isGhimed:true,category: news.category},{isGhimed : false});
         const updateNew = await newsModel.findByIdAndUpdate(id,{isGhimed: true})
-        res.send("Update bài ghim thành công")
+        res.send("Update bài ghim thành công");
       }else{
-        throw new Error({"message" : "ID SAI"})
+        throw new Error({"message" : "ID SAI"});
       }
     }catch(err){
       res.send(err)
