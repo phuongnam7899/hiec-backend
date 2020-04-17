@@ -85,9 +85,15 @@ export class Controller {
   async deletePostByID(req, res) {
     //TO-DO : user gửi req phải là chủ của bài viết
     const postID = req.params.id;
+    const {userID,token} = req.params
+    const tokenFound = await tokenModel.findOne({token : token});
     try {
-      const deletedPost = await postModel.findByIdAndDelete(postID);
-      res.send(deletedPost);
+      if(tokenFound && tokenFound.userID === userID){
+        const deletedPost = await postModel.findByIdAndDelete(postID);
+        res.send(deletedPost);
+      }else{
+        throw new Error({message : "hello hacker"})
+      }
     } catch (err) {
       res.send(err);
     }

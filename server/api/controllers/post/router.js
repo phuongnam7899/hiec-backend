@@ -4,7 +4,7 @@ import Controller from "./controller"
 export default express.Router()
                         .post("/", Controller.createNewPost)
                         .get("/:id", Controller.getPostByID)
-                        .delete("/:id", Controller.deletePostByID)
+                        .delete("/:id/:userID/:token", Controller.deletePostByID)
                         .post("/by-user", Controller.getPostsByUser)
                         .put("/add-clap", Controller.addClap)
                         .put("/add-view", Controller.addView)
