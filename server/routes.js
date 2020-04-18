@@ -17,8 +17,8 @@ export default function routes(app) {
   app.use(function (req, res, next) {
     const token = req.body.token || req.query.token || req.get('X-Auth-Token');
     if (token) {
-      tokenModel.findOne({token: token, isActive: false}).then((tokenFound) =>{
-        if(tokenFound){
+      tokenModel.findOne({token: token}).then((tokenFound) =>{
+        if(!tokenFound){
           return res.json({ success: false, message: 'Token exprired' });
         }else{
           jwt.verify(token, process.env.SECRET_KEY, function (err, decoded) {

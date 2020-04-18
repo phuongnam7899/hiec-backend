@@ -32,17 +32,23 @@ export class Controller {
                 })
         }
     }
-    signOut(req, res) {
+    async signOut(req, res) {
         const token = req.body.token || req.query.token || req.headers['x-access-token'];
-        // console.log(token)
-        tokenModel.findOneAndUpdate({ token: token, isActive: true }, { isActive: false }).then((updatedToken) => {
-            if (updatedToken) {
-                // console.log(updatedToken)
-                res.send("Logged out")
-            } else {
-                res.send("Token invalid")
-            }
-        })
+        const userID = req.query.id;
+        const tokenFound = await tokenModel.findOne({token:token})
+        console.log("hello1")
+        if(tokenFound && tokenFound.userID === userID){
+            tokenModel.findOneAndDelete({token : token}).then((updatedToken) => {
+                if (updatedToken) {
+                    res.send("Logged out")
+                } else {
+                    res.send("Token invalid")
+                }
+            })
+        }else{
+            res.send({message : "No token existed", code : 400})
+        }
+     
     }
     async register(req, res) {
         const { email, password, name, dob, isWorking } = req.body

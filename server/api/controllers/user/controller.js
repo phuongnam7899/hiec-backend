@@ -1,36 +1,46 @@
 import userModel from "../../models/user"
 import postModel from "../../models/post"
+import tokenModel from "../../models/token"
 
 export class Controller {
-    changePassword(req, res) {
-        const { oldPassword, newPassword ,token} = req.body;
-        const { id } = req.params;
+    changePassword(req,res){
+        const {oldPassword,newPassword,token} = req.body;
+        const {id} = req.params;
         // console.log(_id);
-        try {
-            userModel.findById(id)
-                .then((userFound) => {
-                    if (userFound) {
-                        // console.log(typeof(userFound.account.password))
-                        if (userFound.account.password === oldPassword) {
-                            userModel.findByIdAndUpdate(id, { "account.password": newPassword })
-                                .then(() => {
-                                    res.status(200).send({ success: 1 })
+        tokenModel.findOne({token : token}).then((tokenFound) => {
+            if(tokenFound){
+                if(tokenFound.userID === id){
+                try{
+                    userModel.findById(id)
+                    .then((userFound)=>{
+                        if(userFound){
+                            // console.log(typeof(userFound.account.password))
+                            if(userFound.account.password === oldPassword){
+                                userModel.findByIdAndUpdate(id,{"account.password":newPassword})
+                                .then(()=>{
+                                    res.status(200).send({success : 1})
                                 })
-                        } else {
-                            res.send({ success: 0, message: "Mật khẩu cũ không chính xác" })
+                            }else{
+                                res.send({success : 0, message : "Mật khẩu cũ không chính xác"})
+                            }
+                        }else{
+                            res.send("Invalid ID")
                         }
-                    } else {
-                        res.send("Invalid ID")
+                    })
                     }
-                })
-        }
-        catch (err) {
-            res.send(err);
-        }
+                    catch(err){
+                        res.send(err);
+                    }}else{
+                        res.send("Fail")
+                    }
+            }else{
+                res.send("Fail")
+            }
+        })
     }
-    updateInfo(req, res) {
-        const { id } = req.params
-        const { name, dob, gender, phoneNumber, address, isWorking, describe, avatar } = req.body
+    updateInfo(req,res){
+        const {id} = req.params
+        const {name,dob,gender,phoneNumber,address,isWorking,describe,avatar,token}  = req.body
         const profile = {
             "name": name,
             "dob": dob,
@@ -43,15 +53,26 @@ export class Controller {
             },
             "avatar": avatar
         }
-        userModel.findByIdAndUpdate(id, { "profile": profile })
-            .then(success => {
-                // console.log(success)
-                if (success) {
-                    res.status(200).send(success)
-                } else {
-                    res.status(405).send("user not found")
+        tokenModel.findOne({token : token}).then((tokenFound) => {
+            if(tokenFound){
+                if(tokenFound.userID === id){
+                    userModel.findByIdAndUpdate(id,{"profile":profile})
+                    .then(success=>{
+                        // console.log(success)
+                        if(success){
+                            res.status(200).send(success)
+                        }else{
+                            res.status(405).send("user not found")
+                        }
+                    })
+                }else{
+                    res.send("Fail")
                 }
-            })
+            }else{
+                res.send("Fail")
+            }
+        })
+
     }
 
 
