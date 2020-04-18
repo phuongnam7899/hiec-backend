@@ -69,8 +69,12 @@ export class Controller {
   }
   async addView(req, res) {
     //TO-DO : user cần tồn tại
-    const { userID, newsID } = req.body;
+    const { userID, newsID, token } = req.body;
+    const tokenFound = await tokenModel.findOne({ token: token })
+    const userFound = await userModel.findById(userID)
     try {
+      if (tokenFound && tokenFound.userID === userID) 
+      {
       const user = await userModel.findById(userID);
       if (user) {
         try {
@@ -103,6 +107,9 @@ export class Controller {
       } else {
         res.send({ success: 0, message: "user undefined" })
       }
+    }else{
+      res.send({success : 0,message : "user undefined - no token found"})
+    }
     } catch (err) {
       console.log(err);
     }

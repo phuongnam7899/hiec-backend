@@ -17,7 +17,7 @@ const checkUserAndDoSth = async (userId, callBack) => {
 
 export class Controller {
   async createNewPost(req, res) {
-    const { tags, user, postTime, title, content } = req.body;
+    const { tags, user, postTime, title, content,token } = req.body;
     const emptyPost = {
       viewers: [],
       claps: [],
@@ -25,7 +25,8 @@ export class Controller {
     };
     if (tags && user && postTime && title && content) {
       const userFound = await userModel.findById(user);
-      if (userFound) {
+      const tokenFound = await tokenModel.findOne({token : token})
+      if (userFound && tokenFound && tokenFound.userID === user) {
         postModel
           .create({ ...emptyPost, tags, user, postTime, title, content })
           .then(createdPost => {
@@ -188,7 +189,7 @@ export class Controller {
   }
   async addView(req, res) {
     //TO-DO : user cần tồn tại
-    const { userID, postID } = req.body;
+    const { userID, postID ,token } = req.body;
     checkUserAndDoSth(userID, async () => {
       try {
         const postBefore = await postModel.findById(postID);
