@@ -36,7 +36,7 @@ export class Controller {
         const token = req.body.token || req.query.token || req.headers['x-access-token'];
         const userID = req.query.id;
         const tokenFound = await tokenModel.findOne({token:token})
-        console.log("hello1")
+     
         if(tokenFound && tokenFound.userID === userID){
             tokenModel.findOneAndDelete({token : token}).then((updatedToken) => {
                 if (updatedToken) {
