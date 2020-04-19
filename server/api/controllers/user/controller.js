@@ -60,7 +60,7 @@ export class Controller {
                     .then(success=>{
                         // console.log(success)
                         if(success){
-                            res.status(200).send(success)
+                            res.status(200).send({message : "update success"})
                         }else{
                             res.status(405).send("user not found")
                         }

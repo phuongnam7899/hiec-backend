@@ -149,7 +149,14 @@ export class Controller {
       .find({ category: category })
       .sort([["postTime", -1]])
       .limit(number);
-    res.send(sortedByTime);
+    let array = [];
+    sortedByTime.forEach(post => {
+      let newPost = JSON.parse(JSON.stringify(post));
+      delete newPost.tags;
+      delete newPost.viewers;  
+      array.push(newPost)
+    });
+    res.send(array);
   }
 
   async ghimNews(req, res) {
@@ -219,12 +226,20 @@ export class Controller {
           }
         }
       }
+      let array = [];
+      sortedByTimeCopy.forEach(post => {
+        let newPost = JSON.parse(JSON.stringify(post));
+        delete newPost.tags;
+        delete newPost.viewers;  
+        array.push(newPost)
+      });
+      res.send(array);
       if (number <= sortedByTimeCopy.length) {
         // console.log(sortedByTimeCopy.slice(0, number));
-        res.send(sortedByTimeCopy.slice(0, number));
+        res.send(array.slice(0, number));
       } else {
         // console.log(sortedByTimeCopy);
-        res.send(sortedByTimeCopy);
+        res.send(array);
       }
     } catch (err) {
       console.log(err);
