@@ -127,7 +127,6 @@ export class Controller {
     
     try {
       if (tokenFound && tokenFound.userID === userID) {
-      
         const postFound = await postModel.findById(postID).populate("user")
         if(postFound.user._id == userID){
           postModel.findByIdAndDelete(postID).then(()=>{
@@ -137,7 +136,6 @@ export class Controller {
           res.status(400).send({message : "Wrong user"})
         }
       } else {
-    
         throw new Error({ message: "hello hacker" })
       }
     } catch (err) {
