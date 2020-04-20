@@ -51,10 +51,12 @@ export class Controller {
      
     }
     async register(req, res) {
-        const { email, password, name, dob, isWorking } = req.body
+        const { email, password, name} = req.body
         const API_KEY = "4400dfa242f74c78f41b83207cc6357a"
+        const API_KEY_2 = "aed954457acea07785e297189d0a903f"
         try {
-            await Axios.get(`http://apilayer.net/api/check?access_key=${API_KEY}&email=${email}`)
+            if(password.length >= 8 && name &&  /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email)){
+                await Axios.get(`http://apilayer.net/api/check?access_key=${API_KEY_2}&email=${email}`)
                 .then(response => {
                     return response.data
                 })
@@ -77,9 +79,9 @@ export class Controller {
                                             name: name,
                                             gender: "",
                                             phoneNumber: "",
-                                            dob: dob,
+                                            dob: null,
                                             occupation: {
-                                                isWorking: isWorking,
+                                                isWorking: false,
                                                 describe: new Object // jobTitle - companyName or school - major
                                             },
                                             address: "",
@@ -93,6 +95,10 @@ export class Controller {
                         res.send({message : "Email doesnt exist",code : 400})
                     }
                 })
+            }
+            else{
+                res.send({message : "not enough info"})
+            }
         } catch (err) {
             res.send(err)
         }
