@@ -42,16 +42,16 @@ export class Controller {
         const {id} = req.params
         const {name,dob,gender,phoneNumber,address,isWorking,describe,avatar,token}  = req.body
         const profile = {
-            "name":name,
-            "dob":dob,
-            "gender":gender,
-            "phoneNumber":phoneNumber,
-            "address":address,
-            "occupation":{
-                "isWorking":isWorking,
-                "describe":describe,
+            "name": name,
+            "dob": dob,
+            "gender": gender,
+            "phoneNumber": phoneNumber,
+            "address": address,
+            "occupation": {
+                "isWorking": isWorking,
+                "describe": describe,
             },
-            "avatar":avatar
+            "avatar": avatar
         }
         tokenModel.findOne({token : token}).then((tokenFound) => {
             if(tokenFound){
@@ -60,7 +60,7 @@ export class Controller {
                     .then(success=>{
                         // console.log(success)
                         if(success){
-                            res.status(200).send(success)
+                            res.status(200).send({message : "update success"})
                         }else{
                             res.status(405).send("user not found")
                         }
@@ -76,39 +76,45 @@ export class Controller {
     }
 
 
-    deleteUserByID(req,res){
-        const {id} = req.params
-        postModel.deleteMany({user : id}).then(deletedPost=>{
-            if(deletedPost){
-                userModel.findByIdAndDelete(id)
-                .then((userDeleted)=>{
-                    if(userDeleted){
-                        res.status(200).send("user deleted")
-                    }
-                    else{
-                        res.status(404).send("User not found")
-                    }
-                })
-            }else{
-                res.status(404).send("Cant delete post so cant delete user")
-            }
-        })
+    // async deleteUserByID(req, res) {
+    //     const { email } = req.params
+    //     const user = await userModel.findOne({ "account.email": email })
+    //     console.log(email)
+    //     if (user) {
+    //         console.log(user)
+    //         postModel.deleteMany({ user: user._id }).then(deletedPost => {
+    //             if (deletedPost) {
+    //                 userModel.findByIdAndDelete(user._id)
+    //                     .then((userDeleted) => {
+    //                         if (userDeleted) {
+    //                             res.status(200).send("user deleted")
+    //                         }
+    //                         else {
+    //                             res.status(404).send("User not found")
+    //                         }
+    //                     })
+    //             } else {
+    //                 res.status(404).send("Cant delete post so cant delete user")
+    //             }
+    //         })
+    //     } else {
+    //         res.send({ message: "no" })
+    //     }
+    // }
 
-    }
-
-    getUserByID(req,res){
-        const {id} = req.params
+    getUserByID(req, res) {
+        const { id } = req.params
         userModel.findById(id)
-        .then((userFound)=>{
-            if(userFound){
-                const userInfo = JSON.parse(JSON.stringify(userFound));
-                delete userInfo.account.password;
-                // console.log(userInfo)
-                res.status(200).send(userInfo)
-            }else{
-                res.status(404).send("user not found / ID wrong")
-            }
-        })
+            .then((userFound) => {
+                if (userFound) {
+                    const userInfo = JSON.parse(JSON.stringify(userFound));
+                    delete userInfo.account.password;
+                    // console.log(userInfo)
+                    res.status(200).send(userInfo)
+                } else {
+                    res.status(404).send("user not found / ID wrong")
+                }
+            })
     }
 
 }

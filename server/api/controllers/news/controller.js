@@ -14,7 +14,7 @@ export class Controller {
 
     try {
       if (tokenFound && tokenFound.userID === userID && userFound.isAdmin) {
-        console.log("helloo1")
+     
         const newNews = await newsModel.create({
           ...emptyNews,
           tags,
@@ -24,7 +24,7 @@ export class Controller {
           category,
           isGhimed: false,
         });
-        console.log("hello2")
+       
         res.send(newNews);
       } else {
         throw new Error({ message: "hacker khong co phan su o day" })
@@ -51,14 +51,14 @@ export class Controller {
     //TO-DO : user gửi req phải là chủ của bài viết
     const newsID = req.params.id;
     const { userID, token } = req.params;
-    console.log(userID,token)
+
     const tokenFound = await tokenModel.findOne({ token: token })
     const userFound = await userModel.findById(userID)
-    console.log(tokenFound,userFound)
+    
     try {
       if (tokenFound && tokenFound.userID === userID && userFound.isAdmin) {
         const deletedNews = await newsModel.findByIdAndDelete(newsID);
-        console.log("delete")
+       
         res.send(deletedNews);
       } else {
         throw new Error({ message: "Hacker ???" })
@@ -69,8 +69,12 @@ export class Controller {
   }
   async addView(req, res) {
     //TO-DO : user cần tồn tại
-    const { userID, newsID } = req.body;
+    const { userID, newsID, token } = req.body;
+    const tokenFound = await tokenModel.findOne({ token: token })
+    const userFound = await userModel.findById(userID)
     try {
+      if (tokenFound && tokenFound.userID === userID) 
+      {
       const user = await userModel.findById(userID);
       if (user) {
         try {
@@ -103,6 +107,9 @@ export class Controller {
       } else {
         res.send({ success: 0, message: "user undefined" })
       }
+    }else{
+      res.send({success : 0,message : "user undefined - no token found"})
+    }
     } catch (err) {
       console.log(err);
     }
@@ -142,19 +149,26 @@ export class Controller {
       .find({ category: category })
       .sort([["postTime", -1]])
       .limit(number);
-    res.send(sortedByTime);
+    let array = [];
+    sortedByTime.forEach(post => {
+      let newPost = JSON.parse(JSON.stringify(post));
+      delete newPost.tags;
+      delete newPost.viewers;  
+      array.push(newPost)
+    });
+    res.send(array);
   }
 
   async ghimNews(req, res) {
     const { id, token, userID } = req.body;
     const tokenFound = await tokenModel.findOne({ token: token })
     const userFound = await userModel.findById(userID)
-    console.log(tokenFound)
+
     try {
       if (tokenFound && tokenFound.userID === userID && userFound.isAdmin) {
         const news = await newsModel.findById(id);
         if (news) {
-          console.log(news)
+          
           const updateOld = await newsModel.findOneAndUpdate({ isGhimed: true, category: news.category }, { isGhimed: false });
           const updateNew = await newsModel.findByIdAndUpdate(id, { isGhimed: true })
           res.send("Update bài ghim thành công");
@@ -212,12 +226,20 @@ export class Controller {
           }
         }
       }
+      let array = [];
+      sortedByTimeCopy.forEach(post => {
+        let newPost = JSON.parse(JSON.stringify(post));
+        delete newPost.tags;
+        delete newPost.viewers;  
+        array.push(newPost)
+      });
+      res.send(array);
       if (number <= sortedByTimeCopy.length) {
         // console.log(sortedByTimeCopy.slice(0, number));
-        res.send(sortedByTimeCopy.slice(0, number));
+        res.send(array.slice(0, number));
       } else {
         // console.log(sortedByTimeCopy);
-        res.send(sortedByTimeCopy);
+        res.send(array);
       }
     } catch (err) {
       console.log(err);

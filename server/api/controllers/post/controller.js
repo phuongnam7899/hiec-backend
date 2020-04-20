@@ -3,7 +3,7 @@ import userModel from "../../models/user";
 import tokenModel from "../../models/token"
 // import post from "../../models/post";
 import axios from "axios";
-
+import { TagList } from "../../../constant/tags"
 const checkUserAndDoSth = async (userId, callBack) => {
   try {
     const user = await userModel.findById(userId);
@@ -14,25 +14,59 @@ const checkUserAndDoSth = async (userId, callBack) => {
     console.log("User undefined");
   }
 };
+const SPAM_DELTA_TIME = 60000;
+const DELAY_TIME = 60000;
+const checkSpamPost = async (postTime, user) => {
+  const postFound = await postModel.findOne({ user: user, postTime: { $gte: (Number(postTime) - SPAM_DELTA_TIME) } })
+  if (postFound) {
+    return true;
+  } else {
+    return false;
+  }
+}
 
 export class Controller {
   async createNewPost(req, res) {
-    const { tags, user, postTime, title, content } = req.body;
+    const { tags, user, postTime, title, content, token } = req.body;
     const emptyPost = {
       viewers: [],
       claps: [],
       comments: []
     };
-    if (tags && user && postTime && title && content) {
-      const userFound = await userModel.findById(user);
-      if (userFound) {
-        postModel
-          .create({ ...emptyPost, tags, user, postTime, title, content })
-          .then(createdPost => {
-            res.send({ message: "success", data: createdPost });
-          })
-          .catch(err => res.send(err));
-      } else res.send({ message: "user not found" });
+    const NOW = Date.now()
+    try {
+      if (tags.length > 0 && user && postTime && title && content) {
+        // Chống tags đểu
+        if (!(tags.every(element => TagList.includes(element)))) {
+          res.status(400).send({ message: "No tag provided or include in list" })
+        } else {
+          // Chống thời gian đểu
+          if (!((Number(postTime) > (NOW - DELAY_TIME)) && (Number(postTime) < NOW))) {
+            res.status(400).send({ message: "post time must be close to now" })
+          } else {
+            const userFound = await userModel.findById(user);
+            const tokenFound = await tokenModel.findOne({ token: token })
+            if (userFound && tokenFound && tokenFound.userID === user) {
+              // Chống spam
+              if (await checkSpamPost(postTime, user)) {
+                res.status(400).send({ message: "Spam post. Please try it later" })
+              } else {
+                postModel
+                  .create({ ...emptyPost, tags, user, postTime, title, content })
+                  .then(createdPost => {
+                    res.send({ message: "success", data: createdPost });
+                  })
+                  .catch(err => res.send(err));
+              }
+            } else res.send({ message: "user not found" });
+          }
+        }
+      } else {
+        res.send({ message: "Not enough info" })
+      }
+
+    } catch (err) {
+      res.send({ err, message: "err" })
     }
   }
 
@@ -44,13 +78,15 @@ export class Controller {
         .populate("user")
         .populate("comments.user")
         .then(postFound => {
-          if (postFound){
-                postFound.user.account = {}
-                postFound.comments.forEach((comment)=>{
-                  comment.user.account = {}
-                })
-                res.send(postFound);
-            }
+          if (postFound) {
+            postFound.user.account = {};
+            postFound.user.isAdmin = null
+            postFound.comments.forEach((comment) => {
+              comment.user.account = {}
+              comment.user.isAdmin = null;
+            })
+            res.send(postFound);
+          }
           else res.send("Post not found");
         })
         .catch(err => res.send(err));
@@ -85,14 +121,14 @@ export class Controller {
   async deletePostByID(req, res) {
     //TO-DO : user gửi req phải là chủ của bài viết
     const postID = req.params.id;
-    const {userID,token} = req.params
-    const tokenFound = await tokenModel.findOne({token : token});
+    const { userID, token } = req.params
+    const tokenFound = await tokenModel.findOne({ token: token });
     try {
-      if(tokenFound && tokenFound.userID === userID){
+      if (tokenFound && tokenFound.userID === userID) {
         const deletedPost = await postModel.findByIdAndDelete(postID);
-        res.send(deletedPost);
-      }else{
-        throw new Error({message : "hello hacker"})
+        res.send({ message: "delete success" });
+      } else {
+        throw new Error({ message: "hello hacker" })
       }
     } catch (err) {
       res.send(err);
@@ -101,9 +137,9 @@ export class Controller {
   async addClap(req, res) {
     //TO-DO : user cần tồn tại
     const { userID, postID, token } = req.body;
-    const tokenFound = await tokenModel.findOne({token : token})
-    if(tokenFound){
-      if(tokenFound.userID === userID){
+    const tokenFound = await tokenModel.findOne({ token: token })
+    if (tokenFound) {
+      if (tokenFound.userID === userID) {
         checkUserAndDoSth(userID, async () => {
           const postBefore = await postModel.findById(postID);
           // console.log(postBefore);
@@ -122,13 +158,13 @@ export class Controller {
               .then(beforeUpdated => {
                 res.send({
                   message: "updated successfully",
-                  data: beforeUpdated
+                  // data: beforeUpdated
                 });
               })
               .catch(err => res.send(err));
           }
         });
-      }else{
+      } else {
         res.send("Fail")
       }
     }
@@ -179,7 +215,9 @@ export class Controller {
       postModel
         .findByIdAndUpdate(postID, { comments: commentsBefore })
         .then(beforeUpdated => {
-          res.send({ message: "updated successfully", data: beforeUpdated });
+          res.send({ message: "updated successfully",
+            data: beforeUpdated 
+          });
         })
         .catch(err => res.send(err));
     } catch (error) {
@@ -188,7 +226,7 @@ export class Controller {
   }
   async addView(req, res) {
     //TO-DO : user cần tồn tại
-    const { userID, postID } = req.body;
+    const { userID, postID, token } = req.body;
     checkUserAndDoSth(userID, async () => {
       try {
         const postBefore = await postModel.findById(postID);
@@ -205,12 +243,15 @@ export class Controller {
               .then(beforeUpdated => {
                 res.send({
                   message: "updated successfully",
-                  data: beforeUpdated
+                  // data: beforeUpdated
                 });
               })
               .catch(err => res.send(err));
           } else {
-            res.send({ message: "viewed before", data: postBefore });
+            res.send({
+              message: "viewed before",
+              //  data: postBefore 
+            });
           }
         }
       } catch (err) {
@@ -226,8 +267,8 @@ export class Controller {
         .find({ tags: { $all: tagList } })
         .sort([["postTime", -1]])
         .populate("user");
-      
-      posts.forEach((post)=>{
+
+      posts.forEach((post) => {
         post.user.account = {}
       })
       // console.log(posts);
@@ -242,8 +283,13 @@ export class Controller {
     try {
       const posts = await postModel.find();
       const foundList = posts.filter(post => {
+        post.user.isAdmin = null;
+        post.comments.forEach((comment) => {
+          comment = { message: "comment1" }
+        })
         return post.title.toUpperCase().includes(keyword.toUpperCase());
       });
+
       res.send(foundList);
     } catch (err) {
       res.send(err);
@@ -260,8 +306,14 @@ export class Controller {
     let arrayPost = [];
     sortedByTime.forEach(post => {
       let newPost = JSON.parse(JSON.stringify(post));
-      delete newPost.user.account;
-      arrayPost.push(newPost);
+      delete newPost.user;
+      delete newPost.tags;
+      delete newPost.viewers;
+      delete newPost.comments;
+      delete newPost.claps;
+      delete newPost.content;
+      delete newPost.postTime;
+      arrayPost.push(newPost)
     });
     res.send(arrayPost);
   }
@@ -296,7 +348,13 @@ export class Controller {
       let arrayPost = [];
       sortedByTimeCopy.forEach(post => {
         let newPost = JSON.parse(JSON.stringify(post));
-        delete newPost.user.account;
+        delete newPost.user;
+        delete newPost.tags;
+        delete newPost.viewers;
+        delete newPost.comments;
+        delete newPost.claps;
+        delete newPost.content;
+        delete newPost.postTime;
         arrayPost.push(newPost);
       });
       if (number <= sortedByTimeCopy.length) {
@@ -331,7 +389,7 @@ export class Controller {
             : await postModel.find().populate("user");
         // console.log(filteredByTag);
         const filteredByTagCopy = [...filteredByTag];
-       
+
 
         for (let i = 0; i < filteredByTagCopy.length; i++) {
           // console.log(i)
@@ -360,8 +418,9 @@ export class Controller {
 
         // console.log(finalFiltered.slice(perPage * page, perPage * (page + 1)));
         const postSent = finalFiltered.slice(perPage * page, perPage * (page + 1))
-        postSent.forEach((post)=>{
+        postSent.forEach((post) => {
           post.user.account = {}
+          post.user.isAdmin = null;
         })
         res.send(postSent);
       } catch (err) {
@@ -372,19 +431,20 @@ export class Controller {
         filteredByTagAndTime =
           tags.length > 0
             ? await postModel
-                .find({ tags: { $all: tags } })
-                .sort([["postTime", -1]])
-                .populate("user")
+              .find({ tags: { $all: tags } })
+              .sort([["postTime", -1]])
+              .populate("user")
             : await postModel
-                .find()
-                .sort([["postTime", -1]])
-                .populate("user");
+              .find()
+              .sort([["postTime", -1]])
+              .populate("user");
         const finalFiltered = filteredByTagAndTime.filter(post => {
           return post.title.toUpperCase().includes(keyword.toUpperCase());
         });
         const postSent = finalFiltered.slice(perPage * page, perPage * (page + 1))
-        postSent.forEach((post)=>{
+        postSent.forEach((post) => {
           post.user.account = {}
+          post.user.isAdmin = null;
         })
         res.send(postSent);
       } catch (err) {

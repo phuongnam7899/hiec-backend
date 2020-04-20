@@ -4,6 +4,7 @@ import jwt from "jsonwebtoken";
 import Axios from "axios";
 
 export class Controller {
+<<<<<<< HEAD
   signIn(req, res) {
     let { email, password } = req.body;
     // console.log(req.body);
@@ -35,6 +36,52 @@ export class Controller {
         .catch((err) => {
           console.log(err);
         });
+=======
+    signIn(req, res) {
+        let { email, password } = req.body;
+        // console.log(req.body);
+        if (!email || !password) res.status(406).send({ message: "Missing email or password" });
+        else {
+            userModel.findOne({ account: { email, password } })
+                .then((userFound) => {
+                    if (!userFound) res.status(401).send({ message: "Wrong email or password" });
+                    else {
+                        const payload = {
+                            email: email
+                        }
+                        const token = jwt.sign(payload, process.env.SECRET_KEY);
+                        const userInfo = JSON.parse(JSON.stringify(userFound));
+                        tokenModel.create({ token: token, userID: userInfo._id }).then((tokenCreated) => {
+                            // console.log(tokenCreated)
+                        })
+                        // console.log(userInfo)
+                        delete userInfo.account;
+                        const responseData = { token, userInfo };
+                        res.status(200).send(responseData)
+                    }
+                }).catch((err) => {
+                    console.log(err)
+                })
+        }
+    }
+    async signOut(req, res) {
+        const token = req.body.token || req.query.token || req.headers['x-access-token'];
+        const userID = req.query.id;
+        const tokenFound = await tokenModel.findOne({token:token})
+     
+        if(tokenFound && tokenFound.userID === userID){
+            tokenModel.findOneAndDelete({token : token}).then((updatedToken) => {
+                if (updatedToken) {
+                    res.send("Logged out")
+                } else {
+                    res.send("Token invalid")
+                }
+            })
+        }else{
+            res.send({message : "No token existed", code : 400})
+        }
+     
+>>>>>>> c6f2e85f2101933c32af6a32bf4452359cccccfa
     }
   }
   signOut(req, res) {
