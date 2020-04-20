@@ -4,39 +4,6 @@ import jwt from "jsonwebtoken";
 import Axios from "axios";
 
 export class Controller {
-<<<<<<< HEAD
-  signIn(req, res) {
-    let { email, password } = req.body;
-    // console.log(req.body);
-    if (!email || !password)
-      res.status(406).send({ message: "Missing email or password" });
-    else {
-      userModel
-        .findOne({ account: { email, password } })
-        .then((userFound) => {
-          if (!userFound)
-            res.status(401).send({ message: "Wrong email or password" });
-          else {
-            const payload = {
-              email: email,
-            };
-            const token = jwt.sign(payload, process.env.SECRET_KEY);
-            const userInfo = JSON.parse(JSON.stringify(userFound));
-            tokenModel
-              .create({ token: token, userID: userInfo._id })
-              .then((tokenCreated) => {
-                // console.log(tokenCreated)
-              });
-            // console.log(userInfo)
-            delete userInfo.account;
-            const responseData = { token, userInfo };
-            res.status(200).send(responseData);
-          }
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-=======
     signIn(req, res) {
         let { email, password } = req.body;
         // console.log(req.body);
@@ -81,24 +48,24 @@ export class Controller {
             res.send({message : "No token existed", code : 400})
         }
      
->>>>>>> c6f2e85f2101933c32af6a32bf4452359cccccfa
     }
-  }
-  signOut(req, res) {
-    const token =
-      req.body.token || req.query.token || req.headers["x-access-token"];
-    // console.log(token)
-    tokenModel
-      .findOneAndUpdate({ token: token, isActive: true }, { isActive: false })
-      .then((updatedToken) => {
-        if (updatedToken) {
-          // console.log(updatedToken)
-          res.send("Logged out");
-        } else {
-          res.send("Token invalid");
-        }
-      });
-  }
+  
+
+  // signOut(req, res) {
+  //   const token = req.body.token || req.query.token || req.headers["x-access-token"];
+  //   // console.log(token)
+  //   tokenModel
+  //     .findOneAndUpdate({ token: token, isActive: true }, { isActive: false })
+  //     .then((updatedToken) => {
+  //       if (updatedToken) {
+  //         // console.log(updatedToken)
+  //         res.send("Logged out");
+  //       } else {
+  //         res.send("Token invalid");
+  //       }
+  //     });
+  // }
+
   async register(req, res) {
     const { email, password, name, dob, isWorking } = req.body;
     const API_KEY = "4400dfa242f74c78f41b83207cc6357a";
@@ -145,6 +112,5 @@ export class Controller {
     } catch (err) {
       res.send(err);
     }
-  }
-}
+  }}
 export default new Controller();
