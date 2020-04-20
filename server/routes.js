@@ -7,6 +7,7 @@ import tokenModel from "./api/models/token";
 import userRouter from "./api/controllers/user/router";
 import postRouter from "./api/controllers/post/router";
 import newsRouter from "./api/controllers/news/router";
+import adminRouter from "./api/controllers/admin/router"
 import commonRouter from "./api/controllers/common/router" 
 export default function routes(app) {
   app.use(bodyParser.urlencoded({ extended: true }));
@@ -40,6 +41,7 @@ export default function routes(app) {
   });
   app.use("/api/post",postRouter);
   app.use("/api/user",userRouter);
+  app.use("/api/admin",adminRouter)
   // app.use("", express.Router().get("/loaderio-2e3f26955ceebd87d89876f3d7468762", (req,res) => {
   //   res.send("check")
   // }))

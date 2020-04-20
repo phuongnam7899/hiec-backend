@@ -15,3 +15,4 @@ export default express.Router()
                         .post("/search", Controller.search)
                         .post("/recent", Controller.getRecent)
                         .post("/hot", Controller.getHotPost)
+                      

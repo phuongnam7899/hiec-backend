@@ -102,15 +102,21 @@ export class Controller {
     //     }
     // }
 
-    getUserByID(req, res) {
+    async getUserByID(req, res) {
         const { id } = req.params
+        const {token} = req.query
+        const tokenFound = await tokenModel.find({token : token})
         userModel.findById(id)
             .then((userFound) => {
                 if (userFound) {
                     const userInfo = JSON.parse(JSON.stringify(userFound));
-                    delete userInfo.account.password;
-                    // console.log(userInfo)
-                    res.status(200).send(userInfo)
+                    // if(tokenFound.userID === id){   
+                        delete userInfo.account.password
+                        res.status(200).send(userInfo)
+                    // }else{
+                    //     delete userInfo.account;
+                    //     res.status(200).send(userInfo)
+                    // }
                 } else {
                     res.status(404).send("user not found / ID wrong")
                 }

@@ -122,16 +122,26 @@ export class Controller {
     //TO-DO : user gửi req phải là chủ của bài viết
     const postID = req.params.id;
     const { userID, token } = req.params
+    
     const tokenFound = await tokenModel.findOne({ token: token });
+    
     try {
       if (tokenFound && tokenFound.userID === userID) {
-        const deletedPost = await postModel.findByIdAndDelete(postID);
-        res.send({ message: "delete success" });
+      
+        const postFound = await postModel.findById(postID).populate("user")
+        if(postFound.user._id == userID){
+          postModel.findByIdAndDelete(postID).then(()=>{
+            res.send({ message: "delete success" });
+          }).catch(err =>res.send(err))
+        }else{
+          res.status(400).send({message : "Wrong user"})
+        }
       } else {
+    
         throw new Error({ message: "hello hacker" })
       }
     } catch (err) {
-      res.send(err);
+      res.send({err,message : "ERRR"});
     }
   }
   async addClap(req, res) {
