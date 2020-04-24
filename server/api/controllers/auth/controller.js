@@ -55,7 +55,7 @@ export class Controller {
         const API_KEY_2 = "aed954457acea07785e297189d0a903f"
         try {
             if(password.length >= 8 && name &&  /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email)){
-                await Axios.get(`http://apilayer.net/api/check?access_key=${API_KEY_2}&email=${email}`)
+                await Axios.get(`http://apilayer.net/api/check?access_key=${API_KEY}&email=${email}`)
                 .then(response => {
                     return response.data
                 })
