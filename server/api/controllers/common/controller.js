@@ -3,12 +3,15 @@ import userModel from "../../models/user"
 
 export class Controller {
     async ranking(req, res) {
+
+        // let t1,t2,t3;
         const now = Date.now();
         const week = 604800000;
         const month = 2629743830;
         const year = 31556926000;
         //  need username,ava,score
         async function findUserMostPosts(limit) {
+            const time = now - limit;
             try {
                 const findPost = await postModel.find({ postTime: { $gte: (now - limit) } }).sort("user").populate("user")
                     let object = {

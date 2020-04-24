@@ -12,4 +12,5 @@ const NewsSchema = new Schema({
     viewer : [String],
     isGhimed : {type : Boolean}
 })
+NewsSchema.index({'$**': 'text',postTime: -1})
 export default Model("new",NewsSchema);

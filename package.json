@@ -13,10 +13,7 @@
     "lint": "eslint -c .eslintrc.json {server,test}/**",
     "lint:fix": "eslint --fix -c .eslintrc.json {server,test}/**"
   },
-  "engines": {
-    "node": "11.10.0",
-    "npm": "6.7.0"
-  },
+
   "dependencies": {
     "axios": "^0.18.1",
     "body-parser": "^1.18.3",

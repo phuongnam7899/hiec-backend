@@ -23,5 +23,5 @@ const PostSchema = new Schema({
         }]
     }]
 })
-PostSchema.index({'$**': 'text'})
+PostSchema.index({'$**': 'text',postTime: -1})
 export default Model("post",PostSchema);

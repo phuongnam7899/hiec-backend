@@ -19,11 +19,11 @@ const app =  new Express();
 export default class ExpressServer {
   constructor() {
     const root = path.normalize(`${__dirname}/../..`);
-    mongoose.connect('mongodb+srv://phuongnam7899:phuongnam7899@xtutor-tdorw.mongodb.net/test?retryWrites=true',
+    mongoose.connect(`mongodb+srv://phuongnam7899:${process.env.MG_PW}@xtutor-tdorw.mongodb.net/test?retryWrites=true`,
       {
-        reconnectTries: 100,
-        reconnectInterval: 500,
-        autoReconnect: true,
+        // reconnectTries: 100,
+        // reconnectInterval: 500,
+        // autoReconnect: true,
         useNewUrlParser: true,
         useUnifiedTopology: true,
         dbName: 'hiec-web'
@@ -40,8 +40,8 @@ export default class ExpressServer {
         }
       );
     app.set('appPath', `${root}client`);
-    app.use(bodyParser.json({ limit: process.env.REQUEST_LIMIT || '50mb' }));
-    app.use(bodyParser.urlencoded({ extended: true, limit: process.env.REQUEST_LIMIT || '50mb' }));
+    app.use(bodyParser.json({ limit: '5mb' }));
+    app.use(bodyParser.urlencoded({ extended: true, limit: '5mb' }));
     //nhớ thêm dòng này để link vs frontend
     app.use(cors({
       origin: ["http://localhost:3000","https://hiec.netlify.com","https://hiec.vn","https://www.hiec.vn","http://hiec.vn","http://www.hiec.vn"],
