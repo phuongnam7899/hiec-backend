@@ -4,7 +4,7 @@ import tokenModel from "../../models/token"
 
 export class Controller{
     async deletePost(req, res) {
-        //TO-DO : user gửi req phải là chủ của bài viết
+       
         const { userID, token, postID } = req.params
         const tokenFound = await tokenModel.findOne({ token: token });
         const userFound = await userModel.findById(userID)
@@ -19,6 +19,7 @@ export class Controller{
           res.send(err);
         }
       }
+
 }
 
 export default new Controller();
