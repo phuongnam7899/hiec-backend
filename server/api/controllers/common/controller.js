@@ -51,11 +51,12 @@ export class Controller {
       }
       let respondData = {
           // week: await findUserMostPosts(week),
-          month: await findUserMostPosts(month),
-          // year: await findUserMostPosts(year),
+          // month: await findUserMostPosts(month),
+          year: await findUserMostPosts(year),
       }
       res.status(200).send(respondData)
   }
+}
 
  
 
