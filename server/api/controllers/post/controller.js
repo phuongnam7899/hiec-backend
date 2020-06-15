@@ -279,7 +279,7 @@ export class Controller {
       posts.forEach((post) => {
         post.user.account = {}
       })
-      // console.log(posts);
+   
       res.send(posts);
     } catch (err) {
       res.send(err);
