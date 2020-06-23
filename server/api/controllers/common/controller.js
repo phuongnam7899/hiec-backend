@@ -1,8 +1,6 @@
 import postModel from "../../models/post";
 import userModel from "../../models/user";
-import classModel from "../../models/class";
-const nodemailer = require("nodemailer");
-var moment = require('moment');
+
 
 export class Controller {
   async ranking(req, res) {
@@ -51,11 +49,13 @@ export class Controller {
       }
       let respondData = {
           // week: await findUserMostPosts(week),
-          month: await findUserMostPosts(month),
-          // year: await findUserMostPosts(year),
+          // month: await findUserMostPosts(month),
+          year: await findUserMostPosts(year),
       }
       res.status(200).send(respondData)
   }
 }
+
+ 
 
 export default new Controller();
