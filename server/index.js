@@ -4,4 +4,4 @@ import routes from './routes';
 
 export default new Server()
   .router(routes)
-  .listen(process.env.PORT || 5000)
+  .listen(process.env.PORT || '0.0.0.0')
