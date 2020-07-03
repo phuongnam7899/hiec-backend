@@ -9,12 +9,12 @@ export class Controller {
       viewer: []
     };
 
-    const tokenFound = await  tokenModel.findOne({ token: token })
-    const userFound =  await userModel.findById(userID)
+    const tokenFound = await tokenModel.findOne({ token: token })
+    const userFound = await userModel.findById(userID)
 
     try {
       if (tokenFound && tokenFound.userID === userID && userFound.isAdmin) {
-     
+
         const newNews = await newsModel.create({
           ...emptyNews,
           tags,
@@ -24,7 +24,7 @@ export class Controller {
           category,
           isGhimed: false,
         });
-       
+
         res.send(newNews);
       } else {
         throw new Error({ message: "hacker khong co phan su o day" })
@@ -54,11 +54,11 @@ export class Controller {
 
     const tokenFound = await tokenModel.findOne({ token: token })
     const userFound = await userModel.findById(userID)
-    
+
     try {
       if (tokenFound && tokenFound.userID === userID && userFound.isAdmin) {
         const deletedNews = await newsModel.findByIdAndDelete(newsID);
-       
+
         res.send(deletedNews);
       } else {
         throw new Error({ message: "Hacker ???" })
@@ -73,43 +73,42 @@ export class Controller {
     const tokenFound = await tokenModel.findOne({ token: token })
     const userFound = await userModel.findById(userID)
     try {
-      if (tokenFound && tokenFound.userID === userID) 
-      {
-      const user = await userModel.findById(userID);
-      if (user) {
-        try {
-          const newsBefore = await newsModel.findById(newsID);
-          if (!newsBefore) res.send("news not found");
-          else {
-            if (!newsBefore.viewer.includes(userID)) {
-              // console.log(newsBefore.claps)
-              // console.log(userID)
-              const viewersBefore = [...newsBefore.viewer];
-              viewersBefore.push(userID);
-              // console.log(viewersBefore)
+      if (tokenFound && tokenFound.userID === userID) {
+        const user = await userModel.findById(userID);
+        if (user) {
+          try {
+            const newsBefore = await newsModel.findById(newsID);
+            if (!newsBefore) res.send("news not found");
+            else {
+              if (!newsBefore.viewer.includes(userID)) {
+                // console.log(newsBefore.claps)
+                // console.log(userID)
+                const viewersBefore = [...newsBefore.viewer];
+                viewersBefore.push(userID);
+                // console.log(viewersBefore)
 
-              newsModel
-                .findByIdAndUpdate(newsID, { viewer: viewersBefore })
-                .then(beforeUpdated => {
-                  res.send({
-                    message: "updated successfully",
-                    data: beforeUpdated
-                  });
-                })
-                .catch(err => res.send(err));
-            } else {
-              res.send({ message: "viewed before", data: newsBefore });
+                newsModel
+                  .findByIdAndUpdate(newsID, { viewer: viewersBefore })
+                  .then(beforeUpdated => {
+                    res.send({
+                      message: "updated successfully",
+                      data: beforeUpdated
+                    });
+                  })
+                  .catch(err => res.send(err));
+              } else {
+                res.send({ message: "viewed before", data: newsBefore });
+              }
             }
+          } catch (err) {
+            res.send(err);
           }
-        } catch (err) {
-          res.send(err);
+        } else {
+          res.send({ success: 0, message: "user undefined" })
         }
       } else {
-        res.send({ success: 0, message: "user undefined" })
+        res.send({ success: 0, message: "user undefined - no token found" })
       }
-    }else{
-      res.send({success : 0,message : "user undefined - no token found"})
-    }
     } catch (err) {
       console.log(err);
     }
@@ -153,7 +152,7 @@ export class Controller {
     sortedByTime.forEach(post => {
       let newPost = JSON.parse(JSON.stringify(post));
       delete newPost.tags;
-      delete newPost.viewers;  
+      delete newPost.viewers;
       array.push(newPost)
     });
     res.send(array);
@@ -168,7 +167,7 @@ export class Controller {
       if (tokenFound && tokenFound.userID === userID && userFound.isAdmin) {
         const news = await newsModel.findById(id);
         if (news) {
-          
+
           const updateOld = await newsModel.findOneAndUpdate({ isGhimed: true, category: news.category }, { isGhimed: false });
           const updateNew = await newsModel.findByIdAndUpdate(id, { isGhimed: true })
           res.send("Update bài ghim thành công");
@@ -230,10 +229,10 @@ export class Controller {
       sortedByTimeCopy.forEach(post => {
         let newPost = JSON.parse(JSON.stringify(post));
         delete newPost.tags;
-        delete newPost.viewers;  
+        delete newPost.viewers;
         array.push(newPost)
       });
-      res.send(array);
+   
       if (number <= sortedByTimeCopy.length) {
         // console.log(sortedByTimeCopy.slice(0, number));
         res.send(array.slice(0, number));

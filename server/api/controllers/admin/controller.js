@@ -11,7 +11,7 @@ export class Controller{
         try {
           if (tokenFound && tokenFound.userID === userID && userFound.isAdmin ) {
             const deletedPost = await postModel.findByIdAndDelete(postID);
-            res.send({ message: "delete success" });
+            zres.send({ message: "delete success" });
           } else {
             res.status(403).send({ message: "hello hacker" })
           }

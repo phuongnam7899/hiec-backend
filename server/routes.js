@@ -20,11 +20,11 @@ export default function routes(app) {
     if (token) {
       tokenModel.findOne({token: token}).then((tokenFound) =>{
         if(!tokenFound){
-          return res.json({ success: false, message: 'Token exprired' });
+          res.json({ success: false, message: 'Token exprired' });
         }else{
           jwt.verify(token, process.env.SECRET_KEY, function (err, decoded) {
             if (err) {
-              return res.json({ success: false, message: 'Failed to authenticate token.' });
+              res.json({ success: false, message: 'Failed to authenticate token.' });
             } else {
               req.decoded = decoded;
               next();
@@ -33,7 +33,7 @@ export default function routes(app) {
         }
       })
     } else {
-      return res.status(403).send({
+      res.status(403).send({
         success: false,
         message: 'No token provided.'
       });
