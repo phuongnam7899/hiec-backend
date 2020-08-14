@@ -41,4 +41,5 @@ export const TagList = [
     "Science",
     "Covidea",
     "IdeaContest",
+    "DHKHD",
 ];
